@@ -1,65 +1,17 @@
-import ttach as tta
 import multiprocessing.pool as mpp
 import multiprocessing as mp
 import time
 from train_supervision import *
 import argparse
 from pathlib import Path
-import glob
-from PIL import Image
 import ttach as tta
 import cv2
 import numpy as np
 import torch
-import albumentations as albu
-import random
-
-from skimage.morphology import remove_small_holes, remove_small_objects
 
 from torch import nn
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from tqdm import tqdm
-
-SEED = 42
-
-
-def seed_everything(seed):
-    random.seed(seed)
-    os.environ['PYTHONHASHSEED'] = str(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = True
-
-
-seed_everything(SEED)
-
-
-def remove_small_objects_and_holes(label, min_size, area_threshold, in_place=False):
-    label = label.astype(np.bool)
-    label = remove_small_objects(label, min_size=min_size, connectivity=1, in_place=in_place)
-    label = remove_small_holes(label, area_threshold=area_threshold, connectivity=1, in_place=in_place)
-    label = label.astype(np.uint8)
-    return label
-
-
-def post_process(mask, min_size=None, min_area=None, num_classes=6):
-    mask_one_hot = np.stack([(mask == v) for v in range(num_classes)], axis=-1)
-    # mask_one_hot = mask_one_hot.transpose(2, 0, 1)
-    # print('mask_one_hot shape:', mask_one_hot.shape)
-    for i in range(num_classes):
-        single_class_one_hot = mask_one_hot[:, :, i].copy()
-        mask_one_hot[:, :, i] = remove_small_objects_and_holes(
-                                       label=single_class_one_hot,
-                                       min_size=min_size, area_threshold=min_area)
-    mask_new = torch.from_numpy(mask_one_hot).float()
-    mask_new = mask_new.argmax(dim=2)
-    # # print('mask_new shape:', mask_new)
-    mask = mask_new.cpu().numpy().astype(np.uint8)
-    # mask = mask_one_hot.astype(np.uint16)
-    # print('final mask shape:', mask.shape)
-    return mask
 
 
 def label2rgb(mask):
@@ -95,8 +47,7 @@ def get_args():
     arg("-c", "--config_path", type=Path, required=True, help="Path to  config")
     arg("-o", "--output_path", type=Path, help="Path where to save resulting masks.", required=True)
     arg("-t", "--tta", help="Test time augmentation.", default=None, choices=[None, "d4", "lr"])
-    arg("-m", "--min-size", help="small obj area thread", type=int, default=None)
-    arg("--rgb", help="whether output rgb images", action='store_true')
+    arg("--rgb", help="whether output rgb masks", action='store_true')
     arg("--val", help="whether eval validation set", action='store_true')
     return parser.parse_args()
 
@@ -113,10 +64,7 @@ def main():
         transforms = tta.Compose(
             [
                 tta.HorizontalFlip(),
-                tta.VerticalFlip(),
-                # tta.Rotate90(angles=[0, 90, 180, 270]),
-                # tta.Scale(scales=[1, 2, 4]),
-                # tta.Multiply(factors=[0.8, 1, 1.2])
+                tta.VerticalFlip()
             ]
         )
         model = tta.SegmentationTTAWrapper(model, transforms)
@@ -142,17 +90,14 @@ def main():
         test_loader = DataLoader(
             test_dataset,
             batch_size=2,
-            num_workers=8,
+            num_workers=4,
             pin_memory=True,
             drop_last=False,
         )
         results = []
-        # crf = DenseCRF(iter_max=10, pos_xy_std=3, pos_w=3, bi_xy_std=140, bi_rgb_std=5, bi_w=5)
         for input in tqdm(test_loader):
             # raw_prediction NxCxHxW
             raw_predictions = model(input['img'].cuda())
-            # print('raw_pred shape:', raw_predictions.shape)
-            # input_images['features'] NxCxHxW C=3
 
             image_ids = input["img_id"]
             if args.val:
@@ -161,19 +106,10 @@ def main():
             img_type = input['img_type']
 
             raw_predictions = nn.Softmax(dim=1)(raw_predictions)
-            # input_images['features'] NxCxHxW C=3
             predictions = raw_predictions.argmax(dim=1)
-            # print('preds shape', predictions[0,:,:])
 
             for i in range(raw_predictions.shape[0]):
-                raw_mask = predictions[i].cpu().numpy()
-                # mask = raw_mask
-                if args.min_size:
-                    mask = post_process(mask=raw_mask, min_size=args.min_size,
-                                        min_area=args.min_size, num_classes=config.num_classes)
-                else:
-                    mask = raw_mask
-                # print(mask.shape)
+                mask = predictions[i].cpu().numpy()
                 mask_name = image_ids[i]
                 mask_type = img_type[i]
                 if args.val:

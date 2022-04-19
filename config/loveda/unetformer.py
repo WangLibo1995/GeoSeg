@@ -1,7 +1,7 @@
 from torch.utils.data import DataLoader
 from plseg.losses import *
 from plseg.datasets.loveda_dataset import *
-from plseg.models.UNetFormer import UNetFormer, EHT2
+from plseg.models.UNetFormer import UNetFormer, UNetFormerAH
 from catalyst.contrib.nn import Lookahead
 from catalyst import utils
 
@@ -34,7 +34,7 @@ strategy = None
 pretrained_ckpt_path = None
 resume_ckpt_path = None
 #  define the network
-net = EHT2(num_classes=num_classes, backbone_name='swsl_resnet18', pretrained=True, decode_channels=64)
+net = UNetFormer(num_classes=num_classes, backbone_name='swsl_resnet18', pretrained=True, decode_channels=64)
 
 # define the loss
 loss = JointLoss(SoftCrossEntropyLoss(smooth_factor=0.05, ignore_index=ignore_index),

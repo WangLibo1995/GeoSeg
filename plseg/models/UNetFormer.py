@@ -175,8 +175,6 @@ class GlobalLocalAttention(nn.Module):
         out = self.attn_x(F.pad(attn, pad=(0, 0, 0, 1), mode='reflect')) + \
               self.attn_y(F.pad(attn, pad=(0, 1, 0, 0), mode='reflect'))
 
-        # alpha = nn.Parameter(torch.ones((H, W)), requires_grad=True).cuda(device=out.device)
-
         out = out + local
         out = self.pad_out(out)
         out = self.proj(out)
@@ -350,7 +348,7 @@ class Decoder(nn.Module):
                     nn.init.constant_(m.bias, 0)
 
 
-class UNetFormer(nn.Module):
+class UNetFormerAH(nn.Module):  # unetformer with auxiliary head
     def __init__(self,
                  decode_channels=64,
                  dropout=0.1,
@@ -427,7 +425,7 @@ class Decoder2(nn.Module):
                     nn.init.constant_(m.bias, 0)
 
 
-class EHT2(nn.Module):
+class UNetFormer(nn.Module):
 
     def __init__(self,
                  decode_channels=64,
@@ -450,59 +448,6 @@ class EHT2(nn.Module):
         res1, res2, res3, res4 = self.backbone(x)
 
         x = self.decoder(res1, res2, res3, res4, h, w)
-        return x
-
-
-class UNetDecoder(nn.Module):
-    def __init__(self, encoder_channels=(96, 192, 384, 768)):
-        super().__init__()
-        self.pre_conv0 = ConvBN(encoder_channels[0], encoder_channels[0], kernel_size=3)
-        self.pre_conv1 = ConvBN(encoder_channels[1], encoder_channels[0], kernel_size=3)
-        self.pre_conv2 = ConvBN(encoder_channels[2], encoder_channels[1], kernel_size=3)
-        self.pre_conv3 = ConvBN(encoder_channels[3], encoder_channels[2], kernel_size=1)
-
-    def forward(self, x0, x1, x2, x3):
-        x3 = self.pre_conv3(x3)
-        x3 = F.interpolate(x3, x2.size()[-2:], mode='nearest')
-        x2 = self.pre_conv2(x2 + x3)
-        x2 = F.interpolate(x2, x1.size()[-2:], mode='nearest')
-        x1 = self.pre_conv1(x1 + x2)
-        x1 = F.interpolate(x1, x0.size()[-2:], mode='nearest')
-        x0 = self.pre_conv0(x0 + x1)
-
-        return x0
-
-
-class Baseline(nn.Module):
-    def __init__(self,
-                 backbone_name='resnet18',
-                 pretrained=True,
-                 num_classes=6
-                 ):
-        super().__init__()
-        self.backbone = timm.create_model(backbone_name, features_only=True, output_stride=32,
-                                          out_indices=(1, 2, 3, 4), pretrained=pretrained)
-        encoder_channels = self.backbone.feature_info.channels()
-
-        self.fpn = UNetDecoder(encoder_channels)
-        self.segmentation_head = Conv(encoder_channels[0], num_classes, kernel_size=1)
-
-        self.init_weight()
-
-    def init_weight(self):
-        for m in self.children():
-            if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, a=1)
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-
-    def forward(self, x):
-        h, w = x.size()[-2:]
-        x1, x2, x3, x = self.backbone(x)
-        x = self.fpn(x1, x2, x3, x)
-        x = self.segmentation_head(x)
-        x = F.interpolate(x, size=(h, w), mode='bilinear', align_corners=False)
-
         return x
 
 

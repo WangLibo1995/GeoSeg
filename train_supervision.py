@@ -2,8 +2,25 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from tools.cfg import py2cfg
 import os
+import torch
+from torch import nn
+import cv2
+import numpy as np
+import argparse
+from pathlib import Path
 from tools.metric import Evaluator
 from pytorch_lightning.loggers import CSVLogger
+import random
+
+
+def seed_everything(seed):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = True
 
 
 def get_args():
@@ -180,7 +197,6 @@ def main():
                          callbacks=[checkpoint_callback], strategy=config.strategy,
                          resume_from_checkpoint=config.resume_ckpt_path, logger=logger)
     trainer.fit(model=model)
-
 
 
 if __name__ == "__main__":

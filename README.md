@@ -6,7 +6,7 @@
 which mainly focuses on using advanced CNNs and Vision Transformers for remote sensing image segmentation.
 
 
-## Major features
+## Major Features
 
 - Unified Benchmark
 
@@ -22,8 +22,10 @@ which mainly focuses on using advanced CNNs and Vision Transformers for remote s
   - [UAVid](https://uavid.nl/)
   - [LoveDA](https://codalab.lisn.upsaclay.fr/competitions/421)
   - [WHU building](http://gpcv.whu.edu.cn)
-  - [Inria building](https://project.inria.fr/aerialimagelabeling/)
+  - [Inria Aerial Image Labelling](https://project.inria.fr/aerialimagelabeling/)
   - More datasets will be supported in the future.
+  
+- Multi-scale Training and Testing
 
 ## Supported Networks
 
@@ -88,11 +90,42 @@ airs
 
 ## Install
 
-Open the folder **airs** using linux terminal and create python environment:
+Open the folder **airs** using **Linux Terminal** and create python environment:
 ```
 conda create -n airs python=3.8
 conda activate airs
 
 conda install pytorch==1.10.0 torchvision==0.11.0 torchaudio==0.10.0 cudatoolkit=11.3 -c pytorch -c conda-forge
-pip install -r geovision_transformer/requirements.txt
+pip install -r GeoSeg/requirements.txt
+```
+## Data Preprocessing
+
+**LoveDA**
+```
+python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Train/Rural/masks_png --output-mask-dir data/LoveDA/Train/Rural/masks_png_convert
+python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Train/Urban/masks_png --output-mask-dir data/LoveDA/Train/Urban/masks_png_convert
+python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Val/Rural/masks_png --output-mask-dir data/LoveDA/Val/Rural/masks_png_convert
+python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Val/Urban/masks_png --output-mask-dir data/LoveDA/Val/Urban/masks_png_convert
+```
+More datasets are updating.
+
+## Training
+
+**LoveDA**
+```
+python GeoSeg/train_supervision.py -c GeoSeg/config/loveda/unetformer.py
+```
+
+## Validation
+
+**LoveDA**
+```
+python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/unetformer.py -o fig_results/loveda/unetformer_val --rgb --val -t 'd4'
+```
+
+## Testing
+
+**LoveDA**
+```
+python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/unetformer.py -o fig_results/loveda/unetformer_test --rgb -t 'd4'
 ```

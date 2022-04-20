@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/pytorch_lightning_segmentation.iml" filepath="$PROJECT_DIR$/.idea/pytorch_lightning_segmentation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/gvt.iml" filepath="$PROJECT_DIR$/.idea/gvt.iml" />
     </modules>
   </component>
 </project>

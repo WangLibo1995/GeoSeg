@@ -1,5 +1,44 @@
 [Welcome to my homepage!](https://WangLibo1995.github.io)
 
+## Introduction
+
+**GeoSeg** is an open-source  semantic segmentation toolbox based on PyTorch, [pytorch lightning](https://www.pytorchlightning.ai/) and [timm](https://github.com/rwightman/pytorch-image-models), 
+which mainly focuses on using advanced CNNs and Vision Transformers for remote sensing image segmentation.
+
+
+## Major features
+
+- Unified Benchmark
+
+  we provide a unified training script for various segmentation methods.
+  
+- Simple and Effective
+
+  Thanks to **pytorch lightning** and **timm** , the code is easy for further development.
+  
+- Support More Remote Sensing Datasets
+ 
+  - [ISPRS Vaihingen and Potsdam](https://www.isprs.org/education/benchmarks/UrbanSemLab/default.aspx) 
+  - [UAVid](https://uavid.nl/)
+  - [LoveDA](https://codalab.lisn.upsaclay.fr/competitions/421)
+  - [WHU building](http://gpcv.whu.edu.cn)
+  - [Inria building](https://project.inria.fr/aerialimagelabeling/)
+  - More datasets will be supported in the future.
+
+## Supported Networks
+
+- Vision Transformer
+
+  - [UNetFormer](http://arxiv.org/abs/2109.08937) 
+  - [DC-Swin](https://ieeexplore.ieee.org/abstract/document/9681903)
+  - [BANet](https://www.mdpi.com/2072-4292/13/16/3065)
+  
+- CNN
+ 
+  - [MANet](https://ieeexplore.ieee.org/abstract/document/9487010) 
+  - [ABCNet](https://www.sciencedirect.com/science/article/pii/S0924271621002379)
+  - [A2FPN](https://www.tandfonline.com/doi/full/10.1080/01431161.2022.2030071)
+  
 ## Folder Structure
 
 Prepare the following folders to organize this repo:
@@ -47,15 +86,13 @@ airs
 │   ├── potsdam (the same with vaihingen)
 ```
 
-## Prerequisites
+## Install
 
-- Linux
-- Python 3.7+
-- PyTorch 1.10
-- torchvision 0.11.1
-- pytorch-lightning 1.5.9
-- timm 0.5.4
-- catalyst 20.09
-- albumentations 1.1.0
-- opencv-python 4.5.4.60
-- other packages
+Open the folder **airs** using linux terminal and create python environment:
+```
+conda create -n airs python=3.8
+conda activate airs
+
+conda install pytorch==1.10.0 torchvision==0.11.0 torchaudio==0.10.0 cudatoolkit=11.3 -c pytorch -c conda-forge
+pip install -r geovision_transformer/requirements.txt
+```

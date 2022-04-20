@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/gvt.iml" filepath="$PROJECT_DIR$/.idea/gvt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../GeoSeg/.idea/GeoSeg.iml" filepath="$PROJECT_DIR$/../GeoSeg/.idea/GeoSeg.iml" />
     </modules>
   </component>
 </project>

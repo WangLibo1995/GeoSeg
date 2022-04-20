@@ -46,7 +46,7 @@ which mainly focuses on using advanced CNNs and Vision Transformers for remote s
 Prepare the following folders to organize this repo:
 ```none
 airs
-├── geovision_transformer (code)
+├── GeoSeg (code)
 ├── pretrain_weights (save the pretrained weights like vit, swin, etc)
 ├── model_weights (save the model weights)
 ├── fig_results (save the masks predicted by models)
@@ -129,3 +129,18 @@ python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/unetformer.py -o fig_result
 ```
 python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/unetformer.py -o fig_results/loveda/unetformer_test --rgb -t 'd4'
 ```
+## Citation
+
+If you find this project useful in your research, please consider cite [our papers](https://WangLibo1995.github.io).
+
+
+## Acknowledgement
+
+We wish **GeoSeg** could serve the growing research of remote sensing by providing a unified benchmark 
+and inspiring researchers to develop their own segmentation networks. Many thanks the following projects's contributions to **GeoSeg**.
+- [pytorch lightning](https://www.pytorchlightning.ai/)
+- [timm](https://github.com/rwightman/pytorch-image-models)
+- [pytorch-toolbelt](https://github.com/BloodAxe/pytorch-toolbelt)
+- [ttach](https://github.com/qubvel/ttach)
+- [catalyst](https://github.com/catalyst-team/catalyst)
+- [mmsegmentation](https://github.com/open-mmlab/mmsegmentation)

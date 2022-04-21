@@ -26,6 +26,7 @@ which mainly focuses on using advanced CNNs and Vision Transformers for remote s
   - More datasets will be supported in the future.
   
 - Multi-scale Training and Testing
+- Inference on Huge Remote Sensing Images
 
 ## Supported Networks
 

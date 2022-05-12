@@ -46,7 +46,7 @@ def get_args():
     arg = parser.add_argument
     arg("-c", "--config_path", type=Path, required=True, help="Path to  config")
     arg("-o", "--output_path", type=Path, help="Path where to save resulting masks.", required=True)
-    arg("-t", "--tta", help="Test time augmentation.", default=None, choices=[None, "d4", "lr"])
+    arg("-t", "--tta", help="Test time augmentation.", default=None, choices=[None, "d4", "lr"]) ## lr is flip TTA, d4 is multi-scale TTA
     arg("--rgb", help="whether output rgb masks", action='store_true')
     arg("--val", help="whether eval validation set", action='store_true')
     return parser.parse_args()

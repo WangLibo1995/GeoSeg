@@ -1,15 +1,15 @@
 from torch.utils.data import DataLoader
 from plseg.losses import *
 from plseg.datasets.loveda_dataset import *
-from plseg.models.UNetFormer import UNetFormer, UNetFormerAH
+from plseg.models.DCSwin import dcswin_small
 from catalyst.contrib.nn import Lookahead
 from catalyst import utils
 
 # training hparam
 max_epoch = 30
 ignore_index = len(CLASSES)
-train_batch_size = 16
-val_batch_size = 16
+train_batch_size = 8
+val_batch_size = 8
 lr = 6e-4
 weight_decay = 0.01
 backbone_lr = 6e-5
@@ -18,54 +18,31 @@ accumulate_n = 1  # accumulate gradients of 4 batches
 num_classes = len(CLASSES)
 classes = CLASSES
 
-test_time_aug = 'd4'
-output_mask_dir, output_mask_rgb_dir = None, None
-weights_name = "unetformer-r18-512crop-ms-epoch30"
-weights_path = "model_weights/loveda/{}".format(weights_name)
-test_weights_name = "last"
-log_name = 'loveda/{}'.format(weights_name)
-monitor = 'val_mIoU'
+weights_name = "dcswin-small-512crop-ms-epoch30"
+weights_path = "model_weights/loveda/{}".format(weights_name)  # do not change
+log_name = 'loveda/{}'.format(weights_name)  # do not change
+monitor = 'val_mIoU'  # such as val_F1, val_OA
 monitor_mode = 'max'
-save_top_k = 1
-save_last = True
-check_val_every_n_epoch = 5
-gpus = [0]
-strategy = None
-pretrained_ckpt_path = None
-resume_ckpt_path = None
+save_top_k = 3  # save the top k model weights on the validation set
+save_last = True  # save the last model weight
+check_val_every_n_epoch = 1  # run validation every n epoch
+gpus = [0]  # gpu ids, more setting can refer to pytorch_lightning
+strategy = None  # 'dp', 'ddp', multi-gpu training can refer to pytorch_lightning
+pretrained_ckpt_path = None  # more setting can refer to pytorch_lightning
+resume_ckpt_path = None  # more setting can refer to pytorch_lightning
+
 #  define the network
-net = UNetFormer(num_classes=num_classes, backbone_name='swsl_resnet18', pretrained=True, decode_channels=64)
+net = dcswin_small(num_classes=num_classes)
 
 # define the loss
 loss = JointLoss(SoftCrossEntropyLoss(smooth_factor=0.05, ignore_index=ignore_index),
                  DiceLoss(smooth=0.05, ignore_index=ignore_index), 1.0, 1.0)
-# loss = UnetFormerLoss(ignore_index=ignore_index)
+
 use_aux_loss = False
 
 # define the dataloader
 
-
-def get_training_transform():
-    train_transform = [
-        albu.HorizontalFlip(p=0.5),
-        # albu.VerticalFlip(p=0.5),
-        # albu.RandomBrightnessContrast(brightness_limit=0.25, contrast_limit=0.25, p=0.15),
-        albu.Normalize()
-    ]
-    return albu.Compose(train_transform)
-
-
-def train_aug(img, mask):
-    crop_aug = Compose([RandomScale(scale_list=[0.75, 1.0, 1.25, 1.5], mode='value'),
-                        SmartCropV1(crop_size=512, max_ratio=0.75, ignore_index=ignore_index, nopad=False)])
-    img, mask = crop_aug(img, mask)
-    img, mask = np.array(img), np.array(mask)
-    aug = get_training_transform()(image=img.copy(), mask=mask.copy())
-    img, mask = aug['image'], aug['mask']
-    return img, mask
-
-
-train_dataset = LoveDATrainDataset(transform=train_aug, data_root='data/LoveDA/Train_all')
+train_dataset = LoveDATrainDataset(transform=train_aug, data_root='data/LoveDA/Train')
 
 val_dataset = loveda_val_dataset
 

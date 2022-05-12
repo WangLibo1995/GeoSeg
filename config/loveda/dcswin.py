@@ -20,6 +20,7 @@ classes = CLASSES
 
 weights_name = "dcswin-small-512crop-ms-epoch30"
 weights_path = "model_weights/loveda/{}".format(weights_name)  # do not change
+test_weights_name = "dcswin-small-512crop-ms-epoch30"  # if save_top_k=3, there are v1,v2 model weights
 log_name = 'loveda/{}'.format(weights_name)  # do not change
 monitor = 'val_mIoU'  # such as val_F1, val_OA
 monitor_mode = 'max'

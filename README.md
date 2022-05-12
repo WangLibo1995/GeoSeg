@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 [Welcome to my homepage!](https://WangLibo1995.github.io)
 
 ## Updating!
@@ -296,4 +295,3 @@ and inspiring researchers to develop their own segmentation networks. Many thank
 - [ttach](https://github.com/qubvel/ttach)
 - [catalyst](https://github.com/catalyst-team/catalyst)
 - [mmsegmentation](https://github.com/open-mmlab/mmsegmentation)
->>>>>>> d27b55dce28cc406e7fecb60c2ed375c790eb78e

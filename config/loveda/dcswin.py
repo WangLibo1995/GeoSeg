@@ -1,7 +1,7 @@
 from torch.utils.data import DataLoader
-from plseg.losses import *
-from plseg.datasets.loveda_dataset import *
-from plseg.models.DCSwin import dcswin_small
+from geoseg.losses import *
+from geoseg.datasets.loveda_dataset import *
+from geoseg.models.DCSwin import dcswin_small
 from catalyst.contrib.nn import Lookahead
 from catalyst import utils
 

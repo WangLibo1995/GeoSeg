@@ -132,6 +132,11 @@ python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/lo
 ```
 python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/loveda/dcswin_test --rgb -t 'd4'
 ```
+## Pretrained Weights
+
+[Baidu](https://pan.baidu.com/s/1foJkxeUZwVi5SnKNpn6hfg) : 1234
+
+
 ## Citation
 
 If you find this project useful in your research, please consider citing [our papers](https://WangLibo1995.github.io).

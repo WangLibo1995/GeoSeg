@@ -915,7 +915,7 @@ class DCSwin(nn.Module):
 
 
 def dcswin_base(pretrained=True, num_classes=4, weight_path='pretrain_weights/stseg_base.pth'):
-    # pretrained weights can load from official repo of Swin Transformer Segmentation
+    # pretrained weights are load from official repo of Swin Transformer
     model = DCSwin(encoder_channels=(128, 256, 512, 1024),
                    num_classes=num_classes,
                    embed_dim=128,

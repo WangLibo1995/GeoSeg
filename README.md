@@ -1,6 +1,11 @@
 [Welcome to my homepage!](https://WangLibo1995.github.io)
 
-## Updating!
+## Updating! 
+
+## News 
+- ISPRS Vaihingen and Potsdam dataset are supported.
+- More network are updated.
+- Inference on huge RS images are supported (inference_huge_image.py).
 
 ## Introduction
 
@@ -110,7 +115,7 @@ python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Train/Urban/ma
 python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Val/Rural/masks_png --output-mask-dir data/LoveDA/Val/Rural/masks_png_convert
 python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Val/Urban/masks_png --output-mask-dir data/LoveDA/Val/Urban/masks_png_convert
 ```
-More datasets are updating.
+Vaihingen and Potsdam datasets are supported. Details are in vaihingen_patch_split.py and potsdam_patch_split.py
 
 ## Training
 
@@ -132,6 +137,8 @@ python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/lo
 ```
 python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/loveda/dcswin_test --rgb -t 'd4'
 ```
+Similar for other datasets.
+
 ## Pretrained Weights
 
 [Baidu](https://pan.baidu.com/s/1foJkxeUZwVi5SnKNpn6hfg) : 1234

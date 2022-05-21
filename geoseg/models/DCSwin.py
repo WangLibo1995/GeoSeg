@@ -961,10 +961,3 @@ def dcswin_tiny(pretrained=True, num_classes=4, weight_path='pretrain_weights/st
         model_dict.update(old_dict)
         model.load_state_dict(model_dict)
     return model
-
-
-if __name__ == '__main__':
-    feats = torch.randn((1, 3, 512, 512))
-    model = dcswin_small(pretrained=False)
-    outputs = model(feats)
-    print(outputs.shape)

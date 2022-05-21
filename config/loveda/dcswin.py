@@ -14,7 +14,7 @@ lr = 6e-4
 weight_decay = 0.01
 backbone_lr = 6e-5
 backbone_weight_decay = 0.01
-accumulate_n = 1  # accumulate gradients of 4 batches
+accumulate_n = 1  # accumulate gradients of n batches
 num_classes = len(CLASSES)
 classes = CLASSES
 

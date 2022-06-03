@@ -1,6 +1,6 @@
-[Welcome to my homepage!](https://WangLibo1995.github.io)
+## Updating! Developing Vision Transformers for remote sensing image segmentation.
 
-## Updating! 
+[Welcome to my homepage!](https://WangLibo1995.github.io)
 
 ## News 
 - ISPRS Vaihingen and Potsdam dataset are supported.
@@ -10,7 +10,7 @@
 ## Introduction
 
 **GeoSeg** is an open-source  semantic segmentation toolbox based on PyTorch, [pytorch lightning](https://www.pytorchlightning.ai/) and [timm](https://github.com/rwightman/pytorch-image-models), 
-which mainly focuses on using advanced CNNs and Vision Transformers for remote sensing image segmentation.
+which mainly focuses on developing advanced Vision Transformers for remote sensing image segmentation.
 
 
 ## Major Features

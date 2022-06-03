@@ -1,4 +1,4 @@
-## Updating! Developing Vision Transformers for remote sensing image segmentation.
+## Updating!
 
 [Welcome to my homepage!](https://WangLibo1995.github.io)
 

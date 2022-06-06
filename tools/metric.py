@@ -9,9 +9,9 @@ class Evaluator(object):
 
     def get_tp_fp_tn_fn(self):
         tp = np.diag(self.confusion_matrix)
-        fp = self.confusion_matrix.sum(axis=1) - np.diag(self.confusion_matrix)
-        fn = self.confusion_matrix.sum(axis=0) - np.diag(self.confusion_matrix)
-        tn = np.diag(self.confusion_matrix).sum() - np.diag(self.confusion_matrix)
+        fp = self.confusion_matrix.sum(axis=0) - np.diag(self.confusion_matrix)
+        fn = self.confusion_matrix.sum(axis=1) - np.diag(self.confusion_matrix)
+        tn = np.diag(self.confusion_matrix).sum() - (fp+fn+tp)
         return tp, fp, tn, fn
 
     def Precision(self):
@@ -47,7 +47,7 @@ class Evaluator(object):
 
     def Pixel_Accuracy_Class(self):
         #         TP                                  TP+FP
-        Acc = np.diag(self.confusion_matrix) / (self.confusion_matrix.sum(axis=1) + self.eps)
+        Acc = np.diag(self.confusion_matrix) / (self.confusion_matrix.sum(axis=0) + self.eps)
         return Acc
 
     def Frequency_Weighted_Intersection_over_Union(self):
@@ -70,3 +70,25 @@ class Evaluator(object):
 
     def reset(self):
         self.confusion_matrix = np.zeros((self.num_class,) * 2)
+
+
+if __name__ == '__main__':
+
+    gt = np.array([[0, 2, 1],
+                   [1, 2, 1],
+                   [1, 0, 1]])
+
+    pre = np.array([[0, 1, 1],
+                   [2, 0, 1],
+                   [1, 1, 1]])
+
+    eval = Evaluator(num_class=3)
+    eval.add_batch(gt, pre)
+    print(eval.confusion_matrix)
+    print(eval.get_tp_fp_tn_fn())
+    print(eval.Precision())
+    print(eval.Recall())
+    print(eval.Intersection_over_Union())
+    print(eval.OA())
+    print(eval.F1())
+    print(eval.Frequency_Weighted_Intersection_over_Union())

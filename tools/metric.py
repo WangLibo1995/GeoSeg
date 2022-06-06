@@ -11,7 +11,7 @@ class Evaluator(object):
         tp = np.diag(self.confusion_matrix)
         fp = self.confusion_matrix.sum(axis=0) - np.diag(self.confusion_matrix)
         fn = self.confusion_matrix.sum(axis=1) - np.diag(self.confusion_matrix)
-        tn = np.diag(self.confusion_matrix).sum() - (fp+fn+tp)
+        tn = np.diag(self.confusion_matrix).sum() - np.diag(self.confusion_matrix)
         return tp, fp, tn, fn
 
     def Precision(self):

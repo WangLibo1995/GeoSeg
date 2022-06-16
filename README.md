@@ -1,4 +1,4 @@
-## Updating!
+## On Updating!
 
 [Welcome to my homepage!](https://WangLibo1995.github.io)
 
@@ -7,7 +7,7 @@
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/transformer-meets-dcfam-a-novel-semantic/semantic-segmentation-on-isprs-vaihingen)](https://paperswithcode.com/sota/semantic-segmentation-on-isprs-vaihingen?p=transformer-meets-dcfam-a-novel-semantic)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/efficient-hybrid-transformer-learning-global/semantic-segmentation-on-uavid)](https://paperswithcode.com/sota/semantic-segmentation-on-uavid?p=efficient-hybrid-transformer-learning-global)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/efficient-hybrid-transformer-learning-global/semantic-segmentation-on-loveda)](https://paperswithcode.com/sota/semantic-segmentation-on-loveda?p=efficient-hybrid-transformer-learning-global)
-- ISPRS Vaihingen and Potsdam dataset are supported.
+- ISPRS Vaihingen and Potsdam datasets are supported, as well as the download link.
 - More network are updated.
 - Inference on huge RS images are supported (inference_huge_image.py).
 
@@ -27,7 +27,7 @@ which mainly focuses on developing advanced Vision Transformers for remote sensi
 
   Thanks to **pytorch lightning** and **timm** , the code is easy for further development.
   
-- Support More Remote Sensing Datasets
+- Supported Remote Sensing Datasets
  
   - [ISPRS Vaihingen and Potsdam](https://www.isprs.org/education/benchmarks/UrbanSemLab/default.aspx) 
   - [UAVid](https://uavid.nl/)
@@ -88,14 +88,10 @@ airs
 │   │   ├── train_images (original)
 │   │   ├── train_masks (original)
 │   │   ├── train_masks_eroded (original)
-│   │   ├── val_images (original)
-│   │   ├── val_masks (original)
-│   │   ├── val_masks_eroded (original)
 │   │   ├── test_images (original)
 │   │   ├── test_masks (original)
 │   │   ├── test_masks_eroded (original)
 │   │   ├── train (processed)
-│   │   ├── val (processed)
 │   │   ├── test (processed)
 │   ├── potsdam (the same with vaihingen)
 ```
@@ -146,6 +142,7 @@ python GeoSeg/tools/vaihingen_patch_split.py \
 --mode "val" --split-size 1024 --stride 1024 \
 --gt
 ```
+As for the validation set, you can select some images from the training set to build it.
 
 **Potsdam**
 ```
@@ -207,6 +204,16 @@ python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/lo
 ```
 Similar for other datasets.
 
+## Inference on huge remote sensing image
+
+```
+python GeoSeg/inference_huge_image.py \
+-i data/vaihingen/test_images \
+-c GeoSeg/config/vaihingen/dcswin.py \
+-o fig_results/vaihingen/dcswin_huge \
+-t 'lr' -ph 512 -pw 512 -b 2 -d "pv"
+```
+
 ## Pretrained Weights
 
 [Baidu Disk](https://pan.baidu.com/s/1foJkxeUZwVi5SnKNpn6hfg) : 1234
@@ -214,7 +221,14 @@ Similar for other datasets.
 
 ## Citation
 
-If you find this project useful in your research, please consider citing [our papers](https://WangLibo1995.github.io).
+If you find this project useful in your research, please consider citing：
+
+- [A Novel Transformer Based Semantic Segmentation Scheme for Fine-Resolution Remote Sensing Images](https://ieeexplore.ieee.org/abstract/document/9681903) 
+- [Transformer Meets Convolution: A Bilateral Awareness Network for Semantic Segmentation of Very Fine Resolution Urban Scene Images](https://www.mdpi.com/2072-4292/13/16/3065)
+- [ABCNet: Attentive Bilateral Contextual Network for Efficient Semantic Segmentation of Fine-Resolution Remote Sensing Images](https://www.sciencedirect.com/science/article/pii/S0924271621002379)
+- [Multiattention network for semantic segmentation of fine-resolution remote sensing images](https://ieeexplore.ieee.org/abstract/document/9487010)
+- [A2-FPN for semantic segmentation of fine-resolution remotely sensed images](https://www.tandfonline.com/doi/full/10.1080/01431161.2022.2030071)
+
 
 
 ## Acknowledgement

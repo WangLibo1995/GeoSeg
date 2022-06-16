@@ -327,34 +327,3 @@ class ABCNet(nn.Module):
                 wd_params += child_wd_params
                 nowd_params += child_nowd_params
         return wd_params, nowd_params, lr_mul_wd_params, lr_mul_nowd_params
-
-
-if __name__ == '__main__':
-    import os
-
-    os.environ["CUDA_VISIBLE_DEVICES"] = '0'
-    feats = torch.randn((1, 3, 1024, 2048)).cuda()
-    mem = torch.cuda.max_memory_allocated()
-    # feats = torch.randn((1, 3, 256, 256))
-    model = ABCNet(3, 19, pretrained=True)
-    # outputs = model(feats)
-    # print(outputs.shape)
-    model.eval()
-    model.cuda()
-
-    avg_time = 0
-    avg_mem = 0
-    import time
-
-    with torch.no_grad():
-        for i in range(110):
-            start_time = time.time()
-            outputs = model(feats)
-            torch.cuda.synchronize()
-            if i >= 10:
-                avg_time += (time.time() - start_time)
-                avg_mem += (torch.cuda.max_memory_allocated() - mem)
-
-    print("Parameters : {}".format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
-    print("FPS: {}".format(100 / avg_time))
-    print("GPU Memory: {}".format(avg_mem / 100))

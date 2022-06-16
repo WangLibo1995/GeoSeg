@@ -110,7 +110,72 @@ conda activate airs
 conda install pytorch==1.10.0 torchvision==0.11.0 torchaudio==0.10.0 cudatoolkit=11.3 -c pytorch -c conda-forge
 pip install -r GeoSeg/requirements.txt
 ```
+
 ## Data Preprocessing
+
+Download [data.](https://pan.baidu.com/s/1sHkl645lPift6kelB41a3w) Baidu Disk: 1234
+
+**Vaihingen**
+
+Generate the training set.
+```
+python GeoSeg/tools/vaihingen_patch_split.py \
+--img-dir "data/vaihingen/train_images" \
+--mask-dir "data/vaihingen/train_masks" \
+--output-img-dir "data/vaihingen/train/images_1024" \
+--output-mask-dir "data/vaihingen/train/masks_1024" \
+--mode "train" --split-size 1024 --stride 512 
+```
+Generate the testing set.
+```
+python GeoSeg/tools/vaihingen_patch_split.py \
+--img-dir "data/vaihingen/test_images" \
+--mask-dir "data/vaihingen/test_masks_eroded" \
+--output-img-dir "data/vaihingen/test/images_1024" \
+--output-mask-dir "data/vaihingen/test/masks_1024" \
+--mode "val" --split-size 1024 --stride 1024 \
+--eroded
+```
+Generate the masks_1024_rgb (RGB format ground truth labels) for visualization.
+```
+python GeoSeg/tools/vaihingen_patch_split.py \
+--img-dir "data/vaihingen/test_images" \
+--mask-dir "data/vaihingen/test_masks" \
+--output-img-dir "data/vaihingen/test/images_1024" \
+--output-mask-dir "data/vaihingen/test/masks_1024_rgb" \
+--mode "val" --split-size 1024 --stride 1024 \
+--gt
+```
+
+**Potsdam**
+```
+python GeoSeg/tools/potsdam_patch_split.py \
+--img-dir "data/potsdam/train_images" \
+--mask-dir "data/potsdam/train_masks" \
+--output-img-dir "data/potsdam/train/images_1024" \
+--output-mask-dir "data/potsdam/train/masks_1024" \
+--mode "train" --split-size 1024 --stride 1024 --rgb-image 
+```
+
+```
+python GeoSeg/tools/potsdam_patch_split.py \
+--img-dir "data/potsdam/test_images" \
+--mask-dir "data/potsdam/test_masks_eroded" \
+--output-img-dir "data/potsdam/test/images_1024" \
+--output-mask-dir "data/potsdam/test/masks_1024" \
+--mode "val" --split-size 1024 --stride 1024 \
+--eroded --rgb-image
+```
+
+```
+python GeoSeg/tools/potsdam_patch_split.py \
+--img-dir "data/potsdam/test_images" \
+--mask-dir "data/potsdam/test_masks" \
+--output-img-dir "data/potsdam/test/images_1024" \
+--output-mask-dir "data/potsdam/test/masks_1024_rgb" \
+--mode "val" --split-size 1024 --stride 1024 \
+--gt --rgb-image
+```
 
 **LoveDA**
 ```
@@ -119,7 +184,6 @@ python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Train/Urban/ma
 python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Val/Rural/masks_png --output-mask-dir data/LoveDA/Val/Rural/masks_png_convert
 python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Val/Urban/masks_png --output-mask-dir data/LoveDA/Val/Urban/masks_png_convert
 ```
-Vaihingen and Potsdam datasets are supported. Details are in vaihingen_patch_split.py and potsdam_patch_split.py
 
 ## Training
 
@@ -145,7 +209,7 @@ Similar for other datasets.
 
 ## Pretrained Weights
 
-[Baidu](https://pan.baidu.com/s/1foJkxeUZwVi5SnKNpn6hfg) : 1234
+[Baidu Disk](https://pan.baidu.com/s/1foJkxeUZwVi5SnKNpn6hfg) : 1234
 
 
 ## Citation

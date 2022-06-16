@@ -13,6 +13,8 @@ from torchvision.transforms import (Pad, ColorJitter, Resize, FiveCrop, RandomCr
                                     RandomHorizontalFlip, RandomRotation, RandomVerticalFlip)
 import random
 
+SEED = 42
+
 
 def seed_everything(seed):
     random.seed(seed)
@@ -39,32 +41,36 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--img-dir", default="data/vaihingen/train_images")
     parser.add_argument("--mask-dir", default="data/vaihingen/train_masks")
-    parser.add_argument("--output-img-dir", default="data/vaihingen/train/images")
-    parser.add_argument("--output-mask-dir", default="data/vaihingen/train/masks")
+    parser.add_argument("--output-img-dir", default="data/vaihingen/train/images_1024")
+    parser.add_argument("--output-mask-dir", default="data/vaihingen/train/masks_1024")
     parser.add_argument("--eroded", action='store_true')
     parser.add_argument("--gt", action='store_true')
     parser.add_argument("--mode", type=str, default='train')
-    parser.add_argument("--val-scale", type=float, default=1.0) # ignore
-    parser.add_argument("--split-size", type=int, default=512)
+    parser.add_argument("--val-scale", type=float, default=1.0)
+    parser.add_argument("--split-size", type=int, default=1024)
     parser.add_argument("--stride", type=int, default=512)
     return parser.parse_args()
 
 
-def get_img_mask_padded(image, mask, patch_size):
-    image_width, image_height = image.size[0], image.size[1]
-    mask_width, mask_height = mask.size[0], mask.size[1]
-    assert image_height == mask_height and image_width == mask_width
-    width_pad, height_pad = 0, 0
-    while (image_width + width_pad) % patch_size != 0:
-        width_pad += 1
-    while (image_height + height_pad) % patch_size != 0:
-        height_pad += 1
-    pad = Pad(padding=(width_pad, height_pad, 0, 0), padding_mode='reflect')
-    image_pad = pad(image)
-    mask_pad = pad(mask)
-    image_pad = cv2.cvtColor(np.array(image_pad), cv2.COLOR_RGB2BGR)
+def get_img_mask_padded(image, mask, patch_size, mode):
+    img, mask = np.array(image), np.array(mask)
+    oh, ow = img.shape[0], img.shape[1]
+    rh, rw = oh % patch_size, ow % patch_size
+    width_pad = 0 if rw == 0 else patch_size - rw
+    height_pad = 0 if rh == 0 else patch_size - rh
+
+    h, w = oh + height_pad, ow + width_pad
+    pad_img = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right',
+                               border_mode=0, value=[0, 0, 0])(image=img)
+    if mode == 'train':
+        pad_img = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right')(image=img)
+
+    pad_mask = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right',
+                                border_mode=0, value=[0, 0, 0])(image=mask)
+    img_pad, mask_pad = pad_img['image'], pad_mask['image']
+    img_pad = cv2.cvtColor(np.array(img_pad), cv2.COLOR_RGB2BGR)
     mask_pad = cv2.cvtColor(np.array(mask_pad), cv2.COLOR_RGB2BGR)
-    return image_pad, mask_pad
+    return img_pad, mask_pad
 
 
 def pv2rgb(mask):
@@ -137,14 +143,14 @@ def image_augment(image, mask, patch_size, mode='train', val_scale=1.0):
         # image_list_train = [image]
         # mask_list_train = [mask]
         for i in range(len(image_list_train)):
-            image_tmp, mask_tmp = get_img_mask_padded(image_list_train[i], mask_list_train[i], patch_size)
+            image_tmp, mask_tmp = get_img_mask_padded(image_list_train[i], mask_list_train[i], patch_size, mode)
             mask_tmp = rgb_to_2D_label(mask_tmp.copy())
             image_list.append(image_tmp)
             mask_list.append(mask_tmp)
     else:
         rescale = Resize(size=(int(image_width * val_scale), int(image_height * val_scale)))
         image, mask = rescale(image.copy()), rescale(mask.copy())
-        image, mask = get_img_mask_padded(image.copy(), mask.copy(), patch_size)
+        image, mask = get_img_mask_padded(image.copy(), mask.copy(), patch_size, mode)
         mask = rgb_to_2D_label(mask.copy())
         image_list.append(image)
         mask_list.append(mask)
@@ -233,7 +239,7 @@ def vaihingen_format(inp):
 
 
 if __name__ == "__main__":
-    seed_everything(42)
+    seed_everything(SEED)
     args = parse_args()
     imgs_dir = args.img_dir
     masks_dir = args.mask_dir

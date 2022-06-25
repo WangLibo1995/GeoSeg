@@ -8,7 +8,7 @@
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/efficient-hybrid-transformer-learning-global/semantic-segmentation-on-uavid)](https://paperswithcode.com/sota/semantic-segmentation-on-uavid?p=efficient-hybrid-transformer-learning-global)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/efficient-hybrid-transformer-learning-global/semantic-segmentation-on-loveda)](https://paperswithcode.com/sota/semantic-segmentation-on-loveda?p=efficient-hybrid-transformer-learning-global)
 - [UNetFormer](https://authors.elsevier.com/a/1fIji3I9x1j9Fs) (accepted by ISPRS) and **UAVid dataset** are supported.
-- ISPRS Vaihingen and Potsdam datasets are supported, as well as the download link.
+- ISPRS Vaihingen and Potsdam datasets are supported. Since private sharing is not allowed, you need to download the datasets from the official website and split them by **Folder Structure**.
 - More network are updated.
 - Inference on huge RS images are supported (inference_huge_image.py).
 
@@ -115,9 +115,7 @@ pip install -r GeoSeg/requirements.txt
 
 ## Data Preprocessing
 
-Download [ISPRS Vaihingen and Postdam.](https://pan.baidu.com/s/1sHkl645lPift6kelB41a3w) Baidu Disk: 1234
-
-UAVid and LoveDA can be downloaded from the official website.
+Download the datasets from the official website and split them yourself.
 
 **Vaihingen**
 

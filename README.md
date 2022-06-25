@@ -220,19 +220,17 @@ python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Val/Urban/mask
 
 ## Training
 
-**LoveDA**
 ```
-python GeoSeg/train_supervision.py -c GeoSeg/config/loveda/dcswin.py
+python GeoSeg/train_supervision.py -c GeoSeg/config/uavid/unetformer.py
 ```
-Similar for other datasets.
+Use different **config** to train different models.
 
 ## Validation
 
-**LoveDA**
+For example:
 ```
 python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/loveda/dcswin_val --rgb --val -t 'd4'
 ```
-Similar for other datasets.
 
 ## Testing
 

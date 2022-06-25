@@ -12,26 +12,26 @@ from PIL import Image
 import random
 from .transform import *
 
-CLASSES = ('ImSurf', 'Building', 'LowVeg', 'Tree', 'Car', 'Clutter')
-PALETTE = [[255, 255, 255], [0, 0, 255], [0, 255, 255], [0, 255, 0], [255, 204, 0], [255, 0, 0]]
+CLASSES = ('Building', 'Road', 'Tree', 'LowVeg', 'Moving_Car',  'Static_Car', 'Human', 'Clutter')
+PALETTE = [[128, 0, 0], [128, 64, 128], [0, 128, 0], [128, 128, 0], [64, 0, 128], [192, 0, 192], [64, 64, 0], [0, 0, 0]]
 
-ORIGIN_IMG_SIZE = (512, 512)
-INPUT_IMG_SIZE = (512, 512)
-TEST_IMG_SIZE = (512, 512)
+ORIGIN_IMG_SIZE = (1024, 1024)
+INPUT_IMG_SIZE = (1024, 1024)
+TEST_IMG_SIZE = (1024, 1024)
 
 
 def get_training_transform():
     train_transform = [
-        albu.RandomRotate90(p=0.5),
+        albu.HorizontalFlip(p=0.5),
+        albu.VerticalFlip(p=0.5),
+        albu.RandomBrightnessContrast(brightness_limit=0.25, contrast_limit=0.25, p=0.25),
         albu.Normalize()
     ]
     return albu.Compose(train_transform)
 
 
 def train_aug(img, mask):
-    crop_aug = Compose([RandomScale(scale_list=[0.5, 0.75, 1.0, 1.25, 1.5], mode='value'),
-                        SmartCropV1(crop_size=512, max_ratio=0.75,
-                                    ignore_index=len(CLASSES), nopad=False)])
+    crop_aug = SmartCropV1(crop_size=768, max_ratio=0.75, ignore_index=255, nopad=False)
     img, mask = crop_aug(img, mask)
     img, mask = np.array(img), np.array(mask)
     aug = get_training_transform()(image=img.copy(), mask=mask.copy())
@@ -53,9 +53,9 @@ def val_aug(img, mask):
     return img, mask
 
 
-class VaihingenDataset(Dataset):
-    def __init__(self, data_root='data/vaihingen/test', mode='val', img_dir='images', mask_dir='masks',
-                 img_suffix='.tif', mask_suffix='.png', transform=val_aug, mosaic_ratio=0.25,
+class UAVIDDataset(Dataset):
+    def __init__(self, data_root='data/uavid/val', mode='val', img_dir='images', mask_dir='masks',
+                 img_suffix='.png', mask_suffix='.png', transform=val_aug, mosaic_ratio=0.0,
                  img_size=ORIGIN_IMG_SIZE):
         self.data_root = data_root
         self.img_dir = img_dir
@@ -74,15 +74,19 @@ class VaihingenDataset(Dataset):
             img, mask = self.load_img_and_mask(index)
             if self.transform:
                 img, mask = self.transform(img, mask)
+            else:
+                img, mask = np.array(img), np.array(mask)
         else:
             img, mask = self.load_mosaic_img_and_mask(index)
             if self.transform:
                 img, mask = self.transform(img, mask)
+            else:
+                img, mask = np.array(img), np.array(mask)
 
         img = torch.from_numpy(img).permute(2, 0, 1).float()
         mask = torch.from_numpy(mask).long()
         img_id = self.img_ids[index]
-        results = dict(img_id=img_id, img=img, gt_semantic_seg=mask)
+        results = {'img': img, 'gt_semantic_seg': mask, 'img_id': img_id}
         return results
 
     def __len__(self):
@@ -162,7 +166,6 @@ class VaihingenDataset(Dataset):
 
 def show_img_mask_seg(seg_path, img_path, mask_path, start_seg_index):
     seg_list = os.listdir(seg_path)
-    seg_list = [f for f in seg_list if f.endswith('.png')]
     fig, ax = plt.subplots(2, 3, figsize=(18, 12))
     seg_list = seg_list[start_seg_index:start_seg_index+2]
     patches = [mpatches.Patch(color=np.array(PALETTE[i])/255., label=CLASSES[i]) for i in range(len(CLASSES))]
@@ -195,7 +198,6 @@ def show_img_mask_seg(seg_path, img_path, mask_path, start_seg_index):
 
 def show_seg(seg_path, img_path, start_seg_index):
     seg_list = os.listdir(seg_path)
-    seg_list = [f for f in seg_list if f.endswith('.png')]
     fig, ax = plt.subplots(2, 2, figsize=(12, 12))
     seg_list = seg_list[start_seg_index:start_seg_index+2]
     patches = [mpatches.Patch(color=np.array(PALETTE[i])/255., label=CLASSES[i]) for i in range(len(CLASSES))]
@@ -226,7 +228,7 @@ def show_mask(img, mask, img_id):
     mask.putpalette(np.array(PALETTE, dtype=np.uint8))
     mask = np.array(mask.convert('RGB'))
     ax1.imshow(img)
-    ax1.set_title('RS IMAGE ' + str(img_id)+'.tif')
+    ax1.set_title('RS IMAGE ' + str(img_id)+'.png')
     ax2.imshow(mask)
     ax2.set_title('Mask ' + str(img_id)+'.png')
     ax2.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0., fontsize='large')

@@ -73,8 +73,7 @@ class Supervision_Train(pl.LightningModule):
         if self.trainer.is_last_batch and (self.trainer.current_epoch + 1) % 1 == 0:
             sch.step()
 
-        log_dict = {'train_loss': loss}
-        return {"loss": loss, "log": log_dict}
+        return {"loss": loss}
 
     def training_epoch_end(self, outputs):
         if 'vaihingen' in self.config.log_name:
@@ -101,7 +100,7 @@ class Supervision_Train(pl.LightningModule):
         eval_value = {'mIoU': mIoU,
                       'F1': F1,
                       'OA': OA}
-        print(eval_value)
+        print('train:', eval_value)
 
         iou_value = {}
         for class_name, iou in zip(self.config.classes, iou_per_class):
@@ -121,7 +120,6 @@ class Supervision_Train(pl.LightningModule):
             self.metrics_val.add_batch(mask[i].cpu().numpy(), pre_mask[i].cpu().numpy())
 
         loss_val = self.loss(prediction, mask)
-        self.log("loss_val", loss_val, batch_size=self.config.val_batch_size)
         return {"loss_val": loss_val}
 
     def validation_epoch_end(self, outputs):
@@ -150,7 +148,7 @@ class Supervision_Train(pl.LightningModule):
         eval_value = {'mIoU': mIoU,
                       'F1': F1,
                       'OA': OA}
-        print(eval_value)
+        print('val:', eval_value)
         iou_value = {}
         for class_name, iou in zip(self.config.classes, iou_per_class):
             iou_value[class_name] = iou

@@ -68,7 +68,7 @@ def main():
 
     model = Supervision_Train.load_from_checkpoint(
         os.path.join(config.weights_path, config.test_weights_name + '.ckpt'), config=config)
-    model.cuda()
+    model.cuda(config.gpus[0])
     evaluator = Evaluator(num_class=config.num_classes)
     evaluator.reset()
     model.eval()
@@ -86,7 +86,7 @@ def main():
                 tta.HorizontalFlip(),
                 tta.VerticalFlip(),
                 # tta.Rotate90(angles=[90]),
-                tta.Scale(scales=[0.5, 0.75, 1.0, 1.25, 1.5], interpolation='bicubic', align_corners=False)
+                tta.Scale(scales=[0.75, 1.0, 1.25, 1.5], interpolation='bicubic', align_corners=False)
             ]
         )
         model = tta.SegmentationTTAWrapper(model, transforms)
@@ -104,7 +104,7 @@ def main():
         results = []
         for input in tqdm(test_loader):
             # raw_prediction NxCxHxW
-            raw_predictions = model(input['img'].cuda())
+            raw_predictions = model(input['img'].cuda(config.gpus[0]))
 
             image_ids = input["img_id"]
             masks_true = input['gt_semantic_seg']

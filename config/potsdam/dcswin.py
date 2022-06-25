@@ -74,13 +74,13 @@ def val_aug(img, mask):
     return img, mask
 
 
-train_dataset = PotsdamDataset(data_root='data/potsdam_rgb/train', mode='train',
+train_dataset = PotsdamDataset(data_root='data/potsdam/train', mode='train',
                                img_dir='images_1024', mask_dir='masks_1024', img_size=(1024, 1024),
                                mosaic_ratio=0.25, transform=train_aug)
 
-val_dataset = PotsdamDataset(data_root='data/potsdam_rgb/val', img_dir='images_1024', mask_dir='masks_1024', img_size=(1024, 1024),
+val_dataset = PotsdamDataset(img_dir='images_1024', mask_dir='masks_1024', img_size=(1024, 1024),
                              transform=val_aug)
-test_dataset = PotsdamDataset(data_root='data/potsdam_rgb/test', img_dir='images_1024', mask_dir='masks_1024', img_size=(1024, 1024),
+test_dataset = PotsdamDataset(img_dir='images_1024', mask_dir='masks_1024', img_size=(1024, 1024),
                               transform=val_aug)
 
 train_loader = DataLoader(dataset=train_dataset,
@@ -103,5 +103,3 @@ net_params = utils.process_model_params(net, layerwise_params=layerwise_params)
 base_optimizer = torch.optim.AdamW(net_params, lr=lr, weight_decay=weight_decay)
 optimizer = Lookahead(base_optimizer)
 lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=2)
-# lr_scheduler = PolyLRScheduler(optimizer, t_initial=max_epoch, power=0.9, lr_min=1e-6,
-#                                warmup_t=5, warmup_lr_init=1e-6)

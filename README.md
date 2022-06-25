@@ -1,4 +1,4 @@
-## On Updating!
+## Version 2.0 (stable)
 
 [Welcome to my homepage!](https://WangLibo1995.github.io)
 
@@ -7,6 +7,7 @@
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/transformer-meets-dcfam-a-novel-semantic/semantic-segmentation-on-isprs-vaihingen)](https://paperswithcode.com/sota/semantic-segmentation-on-isprs-vaihingen?p=transformer-meets-dcfam-a-novel-semantic)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/efficient-hybrid-transformer-learning-global/semantic-segmentation-on-uavid)](https://paperswithcode.com/sota/semantic-segmentation-on-uavid?p=efficient-hybrid-transformer-learning-global)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/efficient-hybrid-transformer-learning-global/semantic-segmentation-on-loveda)](https://paperswithcode.com/sota/semantic-segmentation-on-loveda?p=efficient-hybrid-transformer-learning-global)
+- [UNetFormer](https://authors.elsevier.com/a/1fIji3I9x1j9Fs) (accepted by ISPRS) and **UAVid dataset** are supported.
 - ISPRS Vaihingen and Potsdam datasets are supported, as well as the download link.
 - More network are updated.
 - Inference on huge RS images are supported (inference_huge_image.py).
@@ -32,8 +33,6 @@ which mainly focuses on developing advanced Vision Transformers for remote sensi
   - [ISPRS Vaihingen and Potsdam](https://www.isprs.org/education/benchmarks/UrbanSemLab/default.aspx) 
   - [UAVid](https://uavid.nl/)
   - [LoveDA](https://codalab.lisn.upsaclay.fr/competitions/421)
-  - [WHU building](http://gpcv.whu.edu.cn)
-  - [Inria Aerial Image Labelling](https://project.inria.fr/aerialimagelabeling/)
   - More datasets will be supported in the future.
   
 - Multi-scale Training and Testing
@@ -43,7 +42,7 @@ which mainly focuses on developing advanced Vision Transformers for remote sensi
 
 - Vision Transformer
 
-  - [UNetFormer](http://arxiv.org/abs/2109.08937) 
+  - [UNetFormer](https://authors.elsevier.com/a/1fIji3I9x1j9Fs) 
   - [DC-Swin](https://ieeexplore.ieee.org/abstract/document/9681903)
   - [BANet](https://www.mdpi.com/2072-4292/13/16/3065)
   
@@ -77,13 +76,16 @@ airs
 │   │   │   │   ├── masks_png_convert
 │   │   │   │   ├── masks_png_convert_rgb
 │   │   ├── Val (the same with Train)
+│   │   ├── train_val (Merge Train and Val)
 │   │   ├── test
 │   ├── uavid
 │   │   ├── uavid_train (original)
 │   │   ├── uavid_val (original)
 │   │   ├── uavid_test (original)
+│   │   ├── uavid_train_val (Merge uavid_train and uavid_val)
 │   │   ├── train (processed)
 │   │   ├── val (processed)
+│   │   ├── train_val (processed)
 │   ├── vaihingen
 │   │   ├── train_images (original)
 │   │   ├── train_masks (original)
@@ -107,9 +109,15 @@ conda install pytorch==1.10.0 torchvision==0.11.0 torchaudio==0.10.0 cudatoolkit
 pip install -r GeoSeg/requirements.txt
 ```
 
+## Pretrained Weights
+
+[Baidu Disk](https://pan.baidu.com/s/1foJkxeUZwVi5SnKNpn6hfg) : 1234
+
 ## Data Preprocessing
 
-Download [data.](https://pan.baidu.com/s/1sHkl645lPift6kelB41a3w) Baidu Disk: 1234
+Download [ISPRS Vaihingen and Postdam.](https://pan.baidu.com/s/1sHkl645lPift6kelB41a3w) Baidu Disk: 1234
+
+UAVid and LoveDA can be downloaded from the official website.
 
 **Vaihingen**
 
@@ -174,6 +182,34 @@ python GeoSeg/tools/potsdam_patch_split.py \
 --gt --rgb-image
 ```
 
+**UAVid**
+```
+python GeoSeg/tools/uavid_patch_split.py \
+--input-dir "data/uavid/uavid_train_val" \
+--output-img-dir "data/uavid/train_val/images" \
+--output-mask-dir "data/uavid/train_val/masks" \
+--mode 'train' --split-size-h 1024 --split-size-w 1024 \
+--stride-h 1024 --stride-w 1024
+```
+
+```
+python GeoSeg/tools/uavid_patch_split.py \
+--input-dir "data/uavid/uavid_train" \
+--output-img-dir "data/uavid/train/images" \
+--output-mask-dir "data/uavid/train/masks" \
+--mode 'train' --split-size-h 1024 --split-size-w 1024 \
+--stride-h 1024 --stride-w 1024
+```
+
+```
+python GeoSeg/tools/uavid_patch_split.py \
+--input-dir "data/uavid/uavid_val" \
+--output-img-dir "data/uavid/val/images" \
+--output-mask-dir "data/uavid/val/masks" \
+--mode 'val' --split-size-h 1024 --split-size-w 1024 \
+--stride-h 1024 --stride-w 1024
+```
+
 **LoveDA**
 ```
 python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Train/Rural/masks_png --output-mask-dir data/LoveDA/Train/Rural/masks_png_convert
@@ -188,6 +224,7 @@ python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Val/Urban/mask
 ```
 python GeoSeg/train_supervision.py -c GeoSeg/config/loveda/dcswin.py
 ```
+Similar for other datasets.
 
 ## Validation
 
@@ -195,6 +232,7 @@ python GeoSeg/train_supervision.py -c GeoSeg/config/loveda/dcswin.py
 ```
 python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/loveda/dcswin_val --rgb --val -t 'd4'
 ```
+Similar for other datasets.
 
 ## Testing
 
@@ -202,10 +240,17 @@ python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/lo
 ```
 python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/loveda/dcswin_test --rgb -t 'd4'
 ```
-Similar for other datasets.
+
+**UAVid**
+```
+python GeoSeg/inference_uavid.py \
+-i 'data/uavid/uavid_test' \
+-c GeoSeg/config/uavid/unetformer.py \
+-o fig_results/uavid/unetformer_r18 \
+-t 'lr' -ph 1152 -pw 1024 -b 2 -d "uavid"
+```
 
 ## Inference on huge remote sensing image
-
 ```
 python GeoSeg/inference_huge_image.py \
 -i data/vaihingen/test_images \
@@ -214,15 +259,11 @@ python GeoSeg/inference_huge_image.py \
 -t 'lr' -ph 512 -pw 512 -b 2 -d "pv"
 ```
 
-## Pretrained Weights
-
-[Baidu Disk](https://pan.baidu.com/s/1foJkxeUZwVi5SnKNpn6hfg) : 1234
-
-
 ## Citation
 
 If you find this project useful in your research, please consider citing：
 
+- [UNetFormer: A UNet-like transformer for efficient semantic segmentation of remote sensing urban scene imagery](https://authors.elsevier.com/a/1fIji3I9x1j9Fs)
 - [A Novel Transformer Based Semantic Segmentation Scheme for Fine-Resolution Remote Sensing Images](https://ieeexplore.ieee.org/abstract/document/9681903) 
 - [Transformer Meets Convolution: A Bilateral Awareness Network for Semantic Segmentation of Very Fine Resolution Urban Scene Images](https://www.mdpi.com/2072-4292/13/16/3065)
 - [ABCNet: Attentive Bilateral Contextual Network for Efficient Semantic Segmentation of Fine-Resolution Remote Sensing Images](https://www.sciencedirect.com/science/article/pii/S0924271621002379)

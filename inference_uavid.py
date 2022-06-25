@@ -28,16 +28,7 @@ def seed_everything(seed):
     torch.backends.cudnn.benchmark = True
 
 
-def building_to_rgb(mask):
-    h, w = mask.shape[0], mask.shape[1]
-    mask_rgb = np.zeros(shape=(h, w, 3), dtype=np.uint8)
-    mask_convert = mask[np.newaxis, :, :]
-    mask_rgb[np.all(mask_convert == 0, axis=0)] = [255, 255, 255]
-    mask_rgb[np.all(mask_convert == 1, axis=0)] = [0, 0, 0]
-    return mask_rgb
-
-
-def pv2rgb(mask):  # Potsdam and vaihingen
+def pv2rgb(mask):
     h, w = mask.shape[0], mask.shape[1]
     mask_rgb = np.zeros(shape=(h, w, 3), dtype=np.uint8)
     mask_convert = mask[np.newaxis, :, :]
@@ -47,6 +38,7 @@ def pv2rgb(mask):  # Potsdam and vaihingen
     mask_rgb[np.all(mask_convert == 2, axis=0)] = [255, 255, 0]
     mask_rgb[np.all(mask_convert == 4, axis=0)] = [0, 204, 255]
     mask_rgb[np.all(mask_convert == 5, axis=0)] = [0, 0, 255]
+    mask_rgb = cv2.cvtColor(mask_rgb, cv2.COLOR_RGB2BGR)
     return mask_rgb
 
 
@@ -81,15 +73,25 @@ def uavid2rgb(mask):
 def get_args():
     parser = argparse.ArgumentParser()
     arg = parser.add_argument
-    arg("-i", "--image_path", type=Path, required=True, help="Path to  huge image folder")
+    arg("-i", "--image_path", type=str, default='data/uavid/uavid_test', help="Path to  huge image")
     arg("-c", "--config_path", type=Path, required=True, help="Path to  config")
     arg("-o", "--output_path", type=Path, help="Path to save resulting masks.", required=True)
-    arg("-t", "--tta", help="Test time augmentation.", default=None, choices=[None, "d4", "lr"])
-    arg("-ph", "--patch-height", help="height of patch size", type=int, default=512)
-    arg("-pw", "--patch-width", help="width of patch size", type=int, default=512)
+    arg("-t", "--tta", help="Test time augmentation.", default="lr", choices=[None, "d4", "lr"])
+    arg("-ph", "--patch-height", help="height of patch size", type=int, default=1152)
+    arg("-pw", "--patch-width", help="width of patch size", type=int, default=1024)
     arg("-b", "--batch-size", help="batch size", type=int, default=2)
-    arg("-d", "--dataset", help="dataset", default="pv", choices=["pv", "landcoverai", "uavid", "building"])
+    arg("-d", "--dataset", help="dataset", default="uavid", choices=["pv", "landcoverai", "uavid"])
     return parser.parse_args()
+
+
+def load_checkpoint(checkpoint_path, model):
+    pretrained_dict = torch.load(checkpoint_path)['model_state_dict']
+    model_dict = model.state_dict()
+    pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+    model_dict.update(pretrained_dict)
+    model.load_state_dict(model_dict)
+
+    return model
 
 
 def get_img_padded(image, patch_size):
@@ -101,8 +103,8 @@ def get_img_padded(image, patch_size):
     # print(oh, ow, rh, rw, height_pad, width_pad)
     h, w = oh + height_pad, ow + width_pad
 
-    pad = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right',
-                           border_mode=0, value=[0, 0, 0])(image=image)
+    pad = albu.PadIfNeeded(min_height=h, min_width=w, border_mode=0,
+                           position='bottom_right', value=[0, 0, 0])(image=image)
     img_pad = pad['image']
     return img_pad, height_pad, width_pad
 
@@ -145,6 +147,9 @@ def make_dataset_for_one_huge_image(img_path, patch_size):
 def main():
     args = get_args()
     seed_everything(42)
+    seqs = os.listdir(args.image_path)
+
+    # print(img_paths)
     patch_size = (args.patch_height, args.patch_width)
     config = py2cfg(args.config_path)
     model = Supervision_Train.load_from_checkpoint(os.path.join(config.weights_path, config.test_weights_name+'.ckpt'), config=config)
@@ -172,75 +177,61 @@ def main():
         )
         model = tta.SegmentationTTAWrapper(model, transforms)
 
-    img_paths = []
-    if not os.path.exists(args.output_path):
-        os.makedirs(args.output_path)
-    for ext in ('*.tif', '*.png', '*.jpg'):
-        img_paths.extend(glob.glob(os.path.join(args.image_path, ext)))
-    img_paths.sort()
-    # print(img_paths)
-    for img_path in img_paths:
-        img_name = img_path.split('/')[-1]
-        # print('origin mask', original_mask.shape)
-        dataset, width_pad, height_pad, output_width, output_height, img_pad, img_shape = \
-            make_dataset_for_one_huge_image(img_path, patch_size)
-        # print('img_padded', img_pad.shape)
-        output_mask = np.zeros(shape=(output_height, output_width), dtype=np.uint8)
-        output_tiles = []
-        k = 0
-        with torch.no_grad():
-            dataloader = DataLoader(dataset=dataset, batch_size=args.batch_size,
-                                    drop_last=False, shuffle=False)
-            for input in tqdm(dataloader):
-                # raw_prediction NxCxHxW
-                raw_predictions = model(input['img'].cuda(config.gpus[0]))
-                # print('raw_pred shape:', raw_predictions.shape)
-                raw_predictions = nn.Softmax(dim=1)(raw_predictions)
-                # input_images['features'] NxCxHxW C=3
-                predictions = raw_predictions.argmax(dim=1)
-                image_ids = input['img_id']
-                # print('prediction', predictions.shape)
-                # print(np.unique(predictions))
+    for seq in seqs:
+        img_paths = []
+        output_path = os.path.join(args.output_path, str(seq), 'Labels')
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+        for ext in ('*.tif', '*.png', '*.jpg'):
+            img_paths.extend(glob.glob(os.path.join(args.image_path, str(seq), 'Images', ext)))
+        img_paths.sort()
+        # print(img_paths)
+        for img_path in img_paths:
+            img_name = img_path.split('/')[-1]
+            # print('origin mask', original_mask.shape)
+            dataset, width_pad, height_pad, output_width, output_height, img_pad, img_shape = \
+                make_dataset_for_one_huge_image(img_path, patch_size)
+            # print('img_padded', img_pad.shape)
+            output_mask = np.zeros(shape=(output_height, output_width), dtype=np.uint8)
+            output_tiles = []
+            k = 0
+            with torch.no_grad():
+                dataloader = DataLoader(dataset=dataset, batch_size=args.batch_size,
+                                        drop_last=False, shuffle=False)
+                for input in tqdm(dataloader):
+                    # raw_prediction NxCxHxW
+                    raw_predictions = model(input['img'].cuda(config.gpus[0]))
+                    # print('raw_pred shape:', raw_predictions.shape)
+                    raw_predictions = nn.Softmax(dim=1)(raw_predictions)
+                    # input_images['features'] NxCxHxW C=3
+                    predictions = raw_predictions.argmax(dim=1)
+                    image_ids = input['img_id']
+                    # print('prediction', predictions.shape)
+                    # print(np.unique(predictions))
 
-                for i in range(predictions.shape[0]):
-                    mask = predictions[i].cpu().numpy()
-                    output_tiles.append((mask, image_ids[i].cpu().numpy()))
+                    for i in range(predictions.shape[0]):
+                        raw_mask = predictions[i].cpu().numpy()
+                        mask = raw_mask
+                        output_tiles.append((mask, image_ids[i].cpu().numpy()))
 
-        for m in range(0, output_height, patch_size[0]):
-            for n in range(0, output_width, patch_size[1]):
-                output_mask[m:m + patch_size[0], n:n + patch_size[1]] = output_tiles[k][0]
-                # print(output_tiles[k][1])
-                k = k + 1
+            for m in range(0, output_height, patch_size[0]):
+                for n in range(0, output_width, patch_size[1]):
+                    output_mask[m:m + patch_size[0], n:n + patch_size[1]] = output_tiles[k][0]
+                    k = k + 1
 
-        output_mask = output_mask[-img_shape[0]:, -img_shape[1]:]
+            output_mask = output_mask[-img_shape[0]:, -img_shape[1]:]
 
-        # if height_pad != 0 and width_pad == 0:
-        #     h_index = height_pad // 2
-        #     output_mask = output_mask[h_index:-h_index, :]
-        # elif height_pad == 0 and width_pad != 0:
-        #     w_index = width_pad // 2
-        #     output_mask = output_mask[:, w_index:-w_index]
-        # elif height_pad != 0 and width_pad != 0:
-        #     h_index = height_pad // 2
-        #     w_index = width_pad // 2
-        #     output_mask = output_mask[h_index:-h_index:, w_index:-w_index]
-        # else:
-        #     output_mask = output_mask
-
-        # print('mask', output_mask.shape)
-        if args.dataset == 'landcoverai':
-            output_mask = landcoverai_to_rgb(output_mask)
-        elif args.dataset == 'pv':
-            output_mask = pv2rgb(output_mask)
-        elif args.dataset == 'uavid':
-            output_mask = uavid2rgb(output_mask)
-        elif args.dataset == 'building':
-            output_mask = building_to_rgb(output_mask)
-        else:
-            output_mask = output_mask
-        # print(img_shape, output_mask.shape)
-        # assert img_shape == output_mask.shape
-        cv2.imwrite(os.path.join(args.output_path, img_name), output_mask)
+            # print('mask', output_mask.shape)
+            if args.dataset == 'landcoverai':
+                output_mask = landcoverai_to_rgb(output_mask)
+            elif args.dataset == 'pv':
+                output_mask = pv2rgb(output_mask)
+            elif args.dataset == 'uavid':
+                output_mask = uavid2rgb(output_mask)
+            else:
+                output_mask = output_mask
+            assert img_shape == output_mask.shape
+            cv2.imwrite(os.path.join(output_path, img_name), output_mask)
 
 
 if __name__ == "__main__":

@@ -56,7 +56,7 @@ def val_aug(img, mask):
 
 
 class PotsdamDataset(Dataset):
-    def __init__(self, data_root='data/potsdam_rgb/test', mode='val', img_dir='images', mask_dir='masks',
+    def __init__(self, data_root='data/potsdam/test', mode='val', img_dir='images', mask_dir='masks',
                  img_suffix='.tif', mask_suffix='.png', transform=None, mosaic_ratio=0.25,
                  img_size=ORIGIN_IMG_SIZE):
         self.data_root = data_root

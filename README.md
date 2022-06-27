@@ -9,7 +9,8 @@
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/efficient-hybrid-transformer-learning-global/semantic-segmentation-on-loveda)](https://paperswithcode.com/sota/semantic-segmentation-on-loveda?p=efficient-hybrid-transformer-learning-global)
 - [UNetFormer](https://authors.elsevier.com/a/1fIji3I9x1j9Fs) (accepted by ISPRS) and **UAVid dataset** are supported.
 - ISPRS Vaihingen and Potsdam datasets are supported. Since private sharing is not allowed, you need to download the datasets from the official website and split them by **Folder Structure**.
-- More network are updated.
+- More network are updated and the link of pretrained weights is provided.
+- **config/loveda/dcswin.py** provides a detailed explain about **config** setting.
 - Inference on huge RS images are supported (inference_huge_image.py).
 
 ## Introduction
@@ -76,8 +77,8 @@ airs
 │   │   │   │   ├── masks_png_convert
 │   │   │   │   ├── masks_png_convert_rgb
 │   │   ├── Val (the same with Train)
+│   │   ├── Test
 │   │   ├── train_val (Merge Train and Val)
-│   │   ├── test
 │   ├── uavid
 │   │   ├── uavid_train (original)
 │   │   ├── uavid_val (original)
@@ -234,7 +235,7 @@ python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/lo
 
 **LoveDA**
 ```
-python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/loveda/dcswin_test --rgb -t 'd4'
+python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/loveda/dcswin_test -t 'd4'
 ```
 
 **UAVid**

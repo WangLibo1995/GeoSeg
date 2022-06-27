@@ -15,17 +15,14 @@ import random
 CLASSES = ('ImSurf', 'Building', 'LowVeg', 'Tree', 'Car', 'Clutter')
 PALETTE = [[255, 255, 255], [0, 0, 255], [0, 255, 255], [0, 255, 0], [255, 204, 0], [255, 0, 0]]
 
-ORIGIN_IMG_SIZE = (512, 512)
-INPUT_IMG_SIZE = (512, 512)
-TEST_IMG_SIZE = (512, 512)
-
+ORIGIN_IMG_SIZE = (1024, 1024)
+INPUT_IMG_SIZE = (1024, 1024)
+TEST_IMG_SIZE = (1024, 1024)
 
 def get_training_transform():
     train_transform = [
-        albu.HorizontalFlip(p=0.5),
-        albu.VerticalFlip(p=0.5),
-        albu.RandomBrightnessContrast(brightness_limit=0.25, contrast_limit=0.25, p=0.15),
-        albu.RandomRotate90(p=0.25),
+        # albu.RandomBrightnessContrast(brightness_limit=0.25, contrast_limit=0.25, p=0.15),
+        # albu.RandomRotate90(p=0.25),
         albu.Normalize()
     ]
     return albu.Compose(train_transform)
@@ -57,7 +54,7 @@ def val_aug(img, mask):
 
 class PotsdamDataset(Dataset):
     def __init__(self, data_root='data/potsdam/test', mode='val', img_dir='images', mask_dir='masks',
-                 img_suffix='.tif', mask_suffix='.png', transform=None, mosaic_ratio=0.25,
+                 img_suffix='.tif', mask_suffix='.png', transform=val_aug, mosaic_ratio=0.0,
                  img_size=ORIGIN_IMG_SIZE):
         self.data_root = data_root
         self.img_dir = img_dir

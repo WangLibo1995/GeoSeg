@@ -32,7 +32,7 @@ strategy = None
 pretrained_ckpt_path = None
 resume_ckpt_path = None
 #  define the network
-net = UNetFormer(num_classes=num_classes, backbone_name='swsl_resnet18', pretrained=True)
+net = UNetFormer(num_classes=num_classes)
 
 # define the loss
 loss = UnetFormerLoss(ignore_index=ignore_index)

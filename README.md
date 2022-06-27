@@ -263,7 +263,8 @@ python GeoSeg/inference_huge_image.py \
 | UNetFormer | Vaihingen | 90.30 | 91.10 | 82.54 |
 | UNetFormer |  Potsdam  | 92.64 | 91.19 | 86.52 |
 | UNetFormer |  LoveDA   |   -   |   -   | 52.93 |
-Due to some random operations in the training stage, the results are slightly different from the reported in paper.
+
+Due to some random operations in the training stage, reproduced results (run once) are slightly different from the reported in paper.
 
 ## Citation
 

@@ -114,6 +114,7 @@ def main():
                 evaluator.add_batch(pre_image=mask, gt_image=masks_true[i].cpu().numpy())
                 mask_name = image_ids[i]
                 results.append((mask, str(args.output_path / mask_name), args.rgb))
+                
     iou_per_class = evaluator.Intersection_over_Union()
     f1_per_class = evaluator.F1()
     OA = evaluator.OA()

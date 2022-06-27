@@ -256,6 +256,15 @@ python GeoSeg/inference_huge_image.py \
 -t 'lr' -ph 512 -pw 512 -b 2 -d "pv"
 ```
 
+## Reproduce Results
+|   Method   |  Dataset  |  F1   |  OA   |  mIoU |
+|:----------:|:---------:|:-----:|:-----:|------:|
+| UNetFormer |   UAVid   |   -   |   -   | 67.63 |
+| UNetFormer | Vaihingen | 90.30 | 91.10 | 82.54 |
+| UNetFormer |  Potsdam  | 92.64 | 91.19 | 86.52 |
+| UNetFormer |  LoveDA   |   -   |   -   | 52.93 |
+Due to some random operations in the training stage, the results are slightly different from the reported in paper.
+
 ## Citation
 
 If you find this project useful in your research, please consider citing：

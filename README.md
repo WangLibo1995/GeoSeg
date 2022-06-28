@@ -257,12 +257,14 @@ python GeoSeg/inference_huge_image.py \
 ```
 
 ## Reproduce Results
-|   Method   |  Dataset  |  F1   |  OA   |  mIoU |
-|:----------:|:---------:|:-----:|:-----:|------:|
-| UNetFormer |   UAVid   |   -   |   -   | 67.63 |
-| UNetFormer | Vaihingen | 90.30 | 91.10 | 82.54 |
-| UNetFormer |  Potsdam  | 92.64 | 91.19 | 86.52 |
-| UNetFormer |  LoveDA   |   -   |   -   | 52.93 |
+|    Method     |  Dataset  |  F1   |  OA   |  mIoU |
+|:-------------:|:---------:|:-----:|:-----:|------:|
+|  UNetFormer   |   UAVid   |   -   |   -   | 67.63 |
+|  UNetFormer   | Vaihingen | 90.30 | 91.10 | 82.54 |
+|  UNetFormer   |  Potsdam  | 92.64 | 91.19 | 86.52 |
+|  UNetFormer   |  LoveDA   |   -   |   -   | 52.97 |
+| FT-UNetFormer | Vaihingen | 91.17 | 91.74 | 83.98 |
+| FT-UNetFormer |  Potsdam  | 93.22 | 91.87 | 87.50 |
 
 Due to some random operations in the training stage, reproduced results (run once) are slightly different from the reported in paper.
 

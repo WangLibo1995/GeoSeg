@@ -90,7 +90,6 @@ airs
 │   ├── vaihingen
 │   │   ├── train_images (original)
 │   │   ├── train_masks (original)
-│   │   ├── train_masks_eroded (original)
 │   │   ├── test_images (original)
 │   │   ├── test_masks (original)
 │   │   ├── test_masks_eroded (original)

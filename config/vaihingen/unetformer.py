@@ -8,8 +8,8 @@ from catalyst import utils
 # training hparam
 max_epoch = 105
 ignore_index = len(CLASSES)
-train_batch_size = 16
-val_batch_size = 16
+train_batch_size = 8
+val_batch_size = 8
 lr = 6e-4
 weight_decay = 0.01
 backbone_lr = 6e-5
@@ -18,9 +18,9 @@ accumulate_n = 1
 num_classes = len(CLASSES)
 classes = CLASSES
 
-weights_name = "unetformer-r18-512-crop-ms-e100"
+weights_name = "unetformer-r18-512-crop-ms-e105"
 weights_path = "model_weights/vaihingen/{}".format(weights_name)
-test_weights_name = "unetformer-r18-512-crop-ms-e100"
+test_weights_name = "unetformer-r18-512-crop-ms-e105"
 log_name = 'vaihingen/{}'.format(weights_name)
 monitor = 'val_F1'
 monitor_mode = 'max'

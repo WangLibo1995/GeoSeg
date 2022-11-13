@@ -111,7 +111,9 @@ pip install -r GeoSeg/requirements.txt
 
 ## Pretrained Weights
 
-[Baidu Disk](https://pan.baidu.com/s/1foJkxeUZwVi5SnKNpn6hfg) : 1234
+[Baidu Disk](https://pan.baidu.com/s/1foJkxeUZwVi5SnKNpn6hfg) : 1234 
+
+[Google Drive](https://drive.google.com/drive/folders/1ELpFKONJZbXmwB5WCXG7w42eHtrXzyPn?usp=sharing)
 
 ## Data Preprocessing
 
@@ -218,26 +220,38 @@ python GeoSeg/tools/loveda_mask_convert.py --mask-dir data/LoveDA/Val/Urban/mask
 
 ## Training
 
+"-c" means the path of the config, use different **config** to train different models.
+
 ```
 python GeoSeg/train_supervision.py -c GeoSeg/config/uavid/unetformer.py
-```
-Use different **config** to train different models.
-
-## Validation
-
-For example:
-```
-python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/loveda/dcswin_val --rgb --val -t 'd4'
 ```
 
 ## Testing
 
-**LoveDA**
+"-c" denotes the path of the config, Use different **config** to test different models. 
+
+"-o" denotes the output path 
+
+"-t" denotes the test time augmentation (TTA), can be [None, 'lr', 'd4'], default is None, 'lr' is flip TTA, 'd4' is multiscale TTA
+
+"--rgb" denotes whether to output masks in RGB format
+
+**Vaihingen**
+```
+python GeoSeg/vaihingen_test.py -c GeoSeg/config/vaihingen/dcswin.py -o fig_results/vaihingen/dcswin --rgb -t 'd4'
+```
+
+**Potsdam**
+```
+python GeoSeg/potsdam_test.py -c GeoSeg/config/potsdam/dcswin.py -o fig_results/potsdam/dcswin --rgb -t 'lr'
+```
+
+**LoveDA** ([Online Testing](https://codalab.lisn.upsaclay.fr/competitions/421))
 ```
 python GeoSeg/loveda_test.py -c GeoSeg/config/loveda/dcswin.py -o fig_results/loveda/dcswin_test -t 'd4'
 ```
 
-**UAVid**
+**UAVid** ([Online Testing](https://codalab.lisn.upsaclay.fr/competitions/7302))
 ```
 python GeoSeg/inference_uavid.py \
 -i 'data/uavid/uavid_test' \

@@ -194,7 +194,7 @@ class ContextPath(nn.Module):
         feat16_up = self.up16(feat16_sum)
         feat16_up = self.conv_head16(feat16_up)
 
-        return feat16_up, feat16, feat32  # x8, x16
+        return feat16_up, self.up16(feat16), self.up32(feat32)  # x8, x16
 
     def init_weight(self):
         for ly in self.children():
@@ -292,8 +292,8 @@ class ABCNet(nn.Module):
         self.fam = FeatureAggregationModule(256, 256)
         self.conv_out = Output(256, 256, n_classes, up_factor=8)
         if self.training:
-            self.conv_out16 = Output(128, 64, n_classes, up_factor=8)
-            self.conv_out32 = Output(128, 64, n_classes, up_factor=16)
+            self.conv_out16 = Output(256, 64, n_classes, up_factor=8)
+            self.conv_out32 = Output(512, 64, n_classes, up_factor=16)
         self.init_weight()
 
     def forward(self, x):
@@ -327,3 +327,16 @@ class ABCNet(nn.Module):
                 wd_params += child_wd_params
                 nowd_params += child_nowd_params
         return wd_params, nowd_params, lr_mul_wd_params, lr_mul_nowd_params
+
+
+if __name__ == "__main__":
+    net = ABCNet(3, 19)
+    net.cuda()
+    net.train()
+    in_ten = torch.randn(4, 3, 512, 512).cuda()
+    out = net(in_ten)
+    print(out.shape)
+    # print(out16.shape)
+    # print(out32.shape)
+
+    net.get_params()

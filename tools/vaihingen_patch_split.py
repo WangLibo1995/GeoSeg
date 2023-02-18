@@ -60,13 +60,11 @@ def get_img_mask_padded(image, mask, patch_size, mode):
     height_pad = 0 if rh == 0 else patch_size - rh
 
     h, w = oh + height_pad, ow + width_pad
-    pad_img = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right',
-                               border_mode=0, value=[0, 0, 0])(image=img)
+    pad_img = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right')(image=img)
     if mode == 'train':
         pad_img = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right')(image=img)
 
-    pad_mask = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right',
-                                border_mode=0, value=[0, 0, 0])(image=mask)
+    pad_mask = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right')(image=mask)
     img_pad, mask_pad = pad_img['image'], pad_mask['image']
     img_pad = cv2.cvtColor(np.array(img_pad), cv2.COLOR_RGB2BGR)
     mask_pad = cv2.cvtColor(np.array(mask_pad), cv2.COLOR_RGB2BGR)
@@ -111,6 +109,7 @@ def image_augment(image, mask, patch_size, mode='train', val_scale=1.0):
     mask_list = []
     image_width, image_height = image.size[1], image.size[0]
     mask_width, mask_height = mask.size[1], mask.size[0]
+
     assert image_height == mask_height and image_width == mask_width
     if mode == 'train':
         # resize_0 = Resize(size=(int(image_width * 0.25), int(image_height * 0.25)))

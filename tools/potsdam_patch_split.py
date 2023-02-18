@@ -61,13 +61,11 @@ def get_img_mask_padded(image, mask, patch_size, mode):
     height_pad = 0 if rh == 0 else patch_size - rh
 
     h, w = oh + height_pad, ow + width_pad
-    pad_img = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right',
-                               border_mode=0, value=[0, 0, 0])(image=img)
+    pad_img = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right')(image=img)
     if mode == 'train':
         pad_img = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right')(image=img)
 
-    pad_mask = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right',
-                                border_mode=0, value=[0, 0, 0])(image=mask)
+    pad_mask = albu.PadIfNeeded(min_height=h, min_width=w, position='bottom_right')(image=mask)
     img_pad, mask_pad = pad_img['image'], pad_mask['image']
     img_pad = cv2.cvtColor(np.array(img_pad), cv2.COLOR_RGB2BGR)
     mask_pad = cv2.cvtColor(np.array(mask_pad), cv2.COLOR_RGB2BGR)

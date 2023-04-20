@@ -8,7 +8,8 @@
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/efficient-hybrid-transformer-learning-global/semantic-segmentation-on-uavid)](https://paperswithcode.com/sota/semantic-segmentation-on-uavid?p=efficient-hybrid-transformer-learning-global)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/efficient-hybrid-transformer-learning-global/semantic-segmentation-on-loveda)](https://paperswithcode.com/sota/semantic-segmentation-on-loveda?p=efficient-hybrid-transformer-learning-global)
 
-- Pretrained Weights can be access from [Google Drive](https://drive.google.com/drive/folders/1ELpFKONJZbXmwB5WCXG7w42eHtrXzyPn?usp=sharing)
+- Recently, I will update this repo to pytorch 2.0.
+- Pretrained Weights of backbones can be access from [Google Drive](https://drive.google.com/drive/folders/1ELpFKONJZbXmwB5WCXG7w42eHtrXzyPn?usp=sharing)
 - [UNetFormer](https://www.sciencedirect.com/science/article/pii/S0924271622001654) (accepted by ISPRS, [PDF](https://www.researchgate.net/profile/Libo-Wang-17/publication/361736439_UNetFormer_A_UNet-like_transformer_for_efficient_semantic_segmentation_of_remote_sensing_urban_scene_imagery/links/62c2a1ed1cbf3a1d12ac1c87/UNetFormer-A-UNet-like-transformer-for-efficient-semantic-segmentation-of-remote-sensing-urban-scene-imagery.pdf)) and **UAVid dataset** are supported.
 - ISPRS Vaihingen and Potsdam datasets are supported. Since private sharing is not allowed, you need to download the datasets from the official website and split them by **Folder Structure**.
 - More network are updated and the link of pretrained weights is provided.
@@ -61,8 +62,8 @@ Prepare the following folders to organize this repo:
 ```none
 airs
 ├── GeoSeg (code)
-├── pretrain_weights (save the pretrained weights like vit, swin, etc)
-├── model_weights (save the model weights)
+├── pretrain_weights (pretrained weights of backbones, such as vit, swin, etc)
+├── model_weights (save the model weights trained on ISPRS vaihingen, LoveDA, etc)
 ├── fig_results (save the masks predicted by models)
 ├── lightning_logs (CSV format training logs)
 ├── data

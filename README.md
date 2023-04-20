@@ -112,7 +112,7 @@ conda install pytorch==1.10.0 torchvision==0.11.0 torchaudio==0.10.0 cudatoolkit
 pip install -r GeoSeg/requirements.txt
 ```
 
-## Pretrained Weights
+## Pretrained Weights of Backbones
 
 [Baidu Disk](https://pan.baidu.com/s/1foJkxeUZwVi5SnKNpn6hfg) : 1234 
 

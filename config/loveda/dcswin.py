@@ -24,16 +24,16 @@ test_weights_name = "dcswin-small-512crop-ms-epoch30"  # if save_top_k=3, there 
 log_name = 'loveda/{}'.format(weights_name)  # do not change
 monitor = 'val_mIoU'  # monitor by val_mIoU, val_F1, val_OA also supported
 monitor_mode = 'max'  # max is better
-save_top_k = 3  # save the top k model weights on the validation set
+save_top_k = 1  # save the top k model weights on the validation set
 save_last = True  # save the last model weight, e.g. test_weights_name='last'
 check_val_every_n_epoch = 1  # run validation every n epoch
 gpus = [0]  # gpu ids, 0, 1, 2.., more setting can refer to pytorch_lightning
-strategy = None  # 'dp', 'ddp', multi-gpu training can refer to pytorch_lightning
+strategy = None  # 'dp', 'ddp', multi-gpu training can refer to pytorch_lightning and deal with train_supervision.py
 pretrained_ckpt_path = None  # more setting can refer to pytorch_lightning
 resume_ckpt_path = None  # more setting can refer to pytorch_lightning
 
-#  define the network
-net = dcswin_small(num_classes=num_classes)
+#  define the network, use pretrained backbone, the weight path of backbone
+net = dcswin_small(num_classes=num_classes, pretrained=True, weight_path='pretrain_weights/stseg_small.pth')
 
 # define the loss
 loss = JointLoss(SoftCrossEntropyLoss(smooth_factor=0.05, ignore_index=ignore_index),

@@ -107,8 +107,6 @@ Open the folder **airs** using **Linux Terminal** and create python environment:
 ```
 conda create -n airs python=3.8
 conda activate airs
-
-conda install pytorch==1.10.0 torchvision==0.11.0 torchaudio==0.10.0 cudatoolkit=11.3 -c pytorch -c conda-forge
 pip install -r GeoSeg/requirements.txt
 ```
 

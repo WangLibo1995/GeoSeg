@@ -1,6 +1,6 @@
 timm
 catalyst==20.09
-pytorch-lightning
+lightning
 albumentations
 ttach
 numpy

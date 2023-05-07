@@ -35,7 +35,6 @@ class Supervision_Train(pl.LightningModule):
         super().__init__()
         self.config = config
         self.net = config.net
-        self.automatic_optimization = False
 
         self.loss = config.loss
 
@@ -62,20 +61,9 @@ class Supervision_Train(pl.LightningModule):
         for i in range(mask.shape[0]):
             self.metrics_train.add_batch(mask[i].cpu().numpy(), pre_mask[i].cpu().numpy())
 
-        # supervision stage
-        opt = self.optimizers(use_pl_optimizer=False)
-        self.manual_backward(loss)
-        if (batch_idx + 1) % self.config.accumulate_n == 0:
-            opt.step()
-            opt.zero_grad()
-
-        sch = self.lr_schedulers()
-        if self.trainer.is_last_batch and (self.trainer.current_epoch + 1) % 1 == 0:
-            sch.step()
-
         return {"loss": loss}
 
-    def training_epoch_end(self, outputs):
+    def on_train_epoch_end(self):
         if 'vaihingen' in self.config.log_name:
             mIoU = np.nanmean(self.metrics_train.Intersection_over_Union()[:-1])
             F1 = np.nanmean(self.metrics_train.F1()[:-1])
@@ -88,7 +76,7 @@ class Supervision_Train(pl.LightningModule):
         elif 'massbuilding' in self.config.log_name:
             mIoU = np.nanmean(self.metrics_train.Intersection_over_Union()[:-1])
             F1 = np.nanmean(self.metrics_train.F1()[:-1])
-        elif 'inriabuilding' in self.config.log_name:
+        elif 'cropland' in self.config.log_name:
             mIoU = np.nanmean(self.metrics_train.Intersection_over_Union()[:-1])
             F1 = np.nanmean(self.metrics_train.F1()[:-1])
         else:
@@ -107,8 +95,7 @@ class Supervision_Train(pl.LightningModule):
             iou_value[class_name] = iou
         print(iou_value)
         self.metrics_train.reset()
-        loss = torch.stack([x["loss"] for x in outputs]).mean()
-        log_dict = {"train_loss": loss, 'train_mIoU': mIoU, 'train_F1': F1, 'train_OA': OA}
+        log_dict = {'train_mIoU': mIoU, 'train_F1': F1, 'train_OA': OA}
         self.log_dict(log_dict, prog_bar=True)
 
     def validation_step(self, batch, batch_idx):
@@ -122,7 +109,7 @@ class Supervision_Train(pl.LightningModule):
         loss_val = self.loss(prediction, mask)
         return {"loss_val": loss_val}
 
-    def validation_epoch_end(self, outputs):
+    def on_validation_epoch_end(self):
         if 'vaihingen' in self.config.log_name:
             mIoU = np.nanmean(self.metrics_val.Intersection_over_Union()[:-1])
             F1 = np.nanmean(self.metrics_val.F1()[:-1])
@@ -135,7 +122,7 @@ class Supervision_Train(pl.LightningModule):
         elif 'massbuilding' in self.config.log_name:
             mIoU = np.nanmean(self.metrics_val.Intersection_over_Union()[:-1])
             F1 = np.nanmean(self.metrics_val.F1()[:-1])
-        elif 'inriabuilding' in self.config.log_name:
+        elif 'cropland' in self.config.log_name:
             mIoU = np.nanmean(self.metrics_val.Intersection_over_Union()[:-1])
             F1 = np.nanmean(self.metrics_val.F1()[:-1])
         else:
@@ -155,8 +142,7 @@ class Supervision_Train(pl.LightningModule):
         print(iou_value)
 
         self.metrics_val.reset()
-        loss = torch.stack([x["loss_val"] for x in outputs]).mean()
-        log_dict = {"val_loss": loss, 'val_mIoU': mIoU, 'val_F1': F1, 'val_OA': OA}
+        log_dict = {'val_mIoU': mIoU, 'val_F1': F1, 'val_OA': OA}
         self.log_dict(log_dict, prog_bar=True)
 
     def configure_optimizers(self):
@@ -190,10 +176,10 @@ def main():
     if config.pretrained_ckpt_path:
         model = Supervision_Train.load_from_checkpoint(config.pretrained_ckpt_path, config=config)
 
-    trainer = pl.Trainer(devices=config.gpus, max_epochs=config.max_epoch, accelerator='gpu',
+    trainer = pl.Trainer(devices=config.gpus, max_epochs=config.max_epoch, accelerator='auto',
                          check_val_every_n_epoch=config.check_val_every_n_epoch,
-                         callbacks=[checkpoint_callback], strategy=config.strategy,
-                         resume_from_checkpoint=config.resume_ckpt_path, logger=logger)
+                         callbacks=[checkpoint_callback], strategy='auto',
+                         logger=logger)
     trainer.fit(model=model)
 
 

@@ -12,7 +12,7 @@
 - Pretrained Weights of backbones can be access from [Google Drive](https://drive.google.com/drive/folders/1ELpFKONJZbXmwB5WCXG7w42eHtrXzyPn?usp=sharing)
 - [UNetFormer](https://www.sciencedirect.com/science/article/pii/S0924271622001654) (accepted by ISPRS, [PDF](https://www.researchgate.net/profile/Libo-Wang-17/publication/361736439_UNetFormer_A_UNet-like_transformer_for_efficient_semantic_segmentation_of_remote_sensing_urban_scene_imagery/links/62c2a1ed1cbf3a1d12ac1c87/UNetFormer-A-UNet-like-transformer-for-efficient-semantic-segmentation-of-remote-sensing-urban-scene-imagery.pdf)) and **UAVid dataset** are supported.
 - ISPRS Vaihingen and Potsdam datasets are supported. Since private sharing is not allowed, you need to download the datasets from the official website and split them by **Folder Structure**.
-- More network are updated and the link of pretrained weights is provided.
+- More networks are updated and the link of pretrained weights is provided.
 - **config/loveda/dcswin.py** provides a detailed explain about **config** setting.
 - Inference on huge RS images are supported (inference_huge_image.py).
 

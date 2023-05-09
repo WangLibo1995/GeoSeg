@@ -14,7 +14,6 @@ lr = 6e-4
 weight_decay = 0.01
 backbone_lr = 6e-5
 backbone_weight_decay = 0.01
-accumulate_n = 1
 num_classes = len(CLASSES)
 classes = CLASSES
 
@@ -26,13 +25,12 @@ test_weights_name = "unetformer-r18-768crop-ms-e45"
 log_name = 'potsdam/{}'.format(weights_name)
 monitor = 'val_F1'
 monitor_mode = 'max'
-save_top_k = 3
+save_top_k = 1
 save_last = True
 check_val_every_n_epoch = 1
-gpus = [0]
-strategy = None
-pretrained_ckpt_path = None
-resume_ckpt_path = None
+gpus = 'auto'  # default or gpu ids:[0] or gpu nums: 2, more setting can refer to pytorch_lightning
+enable_checkpointing = False  # continue training with the checkpoint, default False
+
 #  define the network
 net = UNetFormer(num_classes=num_classes)
 

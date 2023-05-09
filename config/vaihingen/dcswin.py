@@ -24,13 +24,12 @@ test_weights_name = "dcswin-small-1024-ms-512crop-e70"
 log_name = 'vaihingen/{}'.format(weights_name)
 monitor = 'val_F1'
 monitor_mode = 'max'
-save_top_k = 3
+save_top_k = 1
 save_last = False
 check_val_every_n_epoch = 1
-gpus = [0]
-strategy = None
-pretrained_ckpt_path = None
-resume_ckpt_path = None
+gpus = 'auto'  # default or gpu ids:[0] or gpu nums: 2, more setting can refer to pytorch_lightning
+enable_checkpointing = False  # continue training with the checkpoint, default False
+
 #  define the network
 net = dcswin_small(num_classes=num_classes)
 

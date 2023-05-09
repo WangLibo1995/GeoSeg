@@ -14,7 +14,6 @@ lr = 6e-4
 weight_decay = 2.5e-4
 backbone_lr = 6e-5
 backbone_weight_decay = 2.5e-4
-accumulate_n = 1  # accumulate gradients of 4 batches
 num_classes = len(CLASSES)
 classes = CLASSES
 
@@ -27,10 +26,9 @@ monitor_mode = 'max'
 save_top_k = 1
 save_last = False
 check_val_every_n_epoch = 1
-gpus = [0]
-strategy = None
-pretrained_ckpt_path = None
-resume_ckpt_path = None
+gpus = 'auto'  # default or gpu ids:[0] or gpu nums: 2, more setting can refer to pytorch_lightning
+enable_checkpointing = False  # continue training with the checkpoint, default False
+
 #  define the network
 net = ft_unetformer(num_classes=num_classes, decoder_channels=256)
 

@@ -149,7 +149,7 @@ def main():
     config = py2cfg(args.config_path)
     model = Supervision_Train.load_from_checkpoint(os.path.join(config.weights_path, config.test_weights_name+'.ckpt'), config=config)
 
-    model.cuda(config.gpus[0])
+    model.cuda()
     model.eval()
 
     if args.tta == "lr":
@@ -193,7 +193,7 @@ def main():
                                     drop_last=False, shuffle=False)
             for input in tqdm(dataloader):
                 # raw_prediction NxCxHxW
-                raw_predictions = model(input['img'].cuda(config.gpus[0]))
+                raw_predictions = model(input['img'].cuda())
                 # print('raw_pred shape:', raw_predictions.shape)
                 raw_predictions = nn.Softmax(dim=1)(raw_predictions)
                 # input_images['features'] NxCxHxW C=3
@@ -213,19 +213,6 @@ def main():
                 k = k + 1
 
         output_mask = output_mask[-img_shape[0]:, -img_shape[1]:]
-
-        # if height_pad != 0 and width_pad == 0:
-        #     h_index = height_pad // 2
-        #     output_mask = output_mask[h_index:-h_index, :]
-        # elif height_pad == 0 and width_pad != 0:
-        #     w_index = width_pad // 2
-        #     output_mask = output_mask[:, w_index:-w_index]
-        # elif height_pad != 0 and width_pad != 0:
-        #     h_index = height_pad // 2
-        #     w_index = width_pad // 2
-        #     output_mask = output_mask[h_index:-h_index:, w_index:-w_index]
-        # else:
-        #     output_mask = output_mask
 
         # print('mask', output_mask.shape)
         if args.dataset == 'landcoverai':

@@ -58,7 +58,7 @@ def main():
     args.output_path.mkdir(exist_ok=True, parents=True)
 
     model = Supervision_Train.load_from_checkpoint(os.path.join(config.weights_path, config.test_weights_name+'.ckpt'), config=config)
-    model.cuda(config.gpus[0])
+    model.cuda()
     model.eval()
     if args.tta == "lr":
         transforms = tta.Compose(
@@ -97,7 +97,7 @@ def main():
         results = []
         for input in tqdm(test_loader):
             # raw_prediction NxCxHxW
-            raw_predictions = model(input['img'].cuda(config.gpus[0]))
+            raw_predictions = model(input['img'].cuda())
 
             image_ids = input["img_id"]
             if args.val:

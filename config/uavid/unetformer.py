@@ -30,8 +30,9 @@ monitor_mode = 'max'
 save_top_k = 1
 save_last = True
 check_val_every_n_epoch = 1
+pretrained_ckpt_path = None # the path for the pretrained model weight
 gpus = 'auto'  # default or gpu ids:[0] or gpu nums: 2, more setting can refer to pytorch_lightning
-enable_checkpointing = False  # continue training with the checkpoint, default False
+enable_checkpointing = None  # whether continue training with the checkpoint, default None
 
 #  define the network
 net = UNetFormer(num_classes=num_classes)

@@ -46,7 +46,7 @@ class EdgeLoss(nn.Module):
         return edge_loss
 
     def forward(self, logits, targets):
-        loss = self.main_loss(logits, targets) + self.compute_edge_loss(logits, targets) * self.edge_factor
+        loss = (self.main_loss(logits, targets) + self.compute_edge_loss(logits, targets) * self.edge_factor) / (self.edge_factor+1)
         return loss
 
 

@@ -179,9 +179,8 @@ def main():
     trainer = pl.Trainer(devices=config.gpus, max_epochs=config.max_epoch, accelerator='auto',
                          check_val_every_n_epoch=config.check_val_every_n_epoch,
                          callbacks=[checkpoint_callback], strategy='auto',
-                         enable_checkpointing=config.enable_checkpointing,
                          logger=logger)
-    trainer.fit(model=model)
+    trainer.fit(model=model, ckpt_path=config.resume_ckpt_path)
 
 
 if __name__ == "__main__":

@@ -28,7 +28,7 @@ save_last = True  # save the last model weight, e.g. test_weights_name='last'
 check_val_every_n_epoch = 1  # run validation every n epoch
 pretrained_ckpt_path = None # the path for the pretrained model weight
 gpus = 'auto'  # default or gpu ids:[0] or gpu nums: 2, more setting can refer to pytorch_lightning
-enable_checkpointing = None  # whether continue training with the checkpoint, default None
+resume_ckpt_path = None  # whether continue training with the checkpoint, default None
 
 #  define the network, use pretrained backbone, the weight path of backbone
 net = dcswin_small(num_classes=num_classes, pretrained=True, weight_path='pretrain_weights/stseg_small.pth')

@@ -164,9 +164,9 @@ class AttentionEnhancementModule(nn.Module):
 
 
 class ContextPath(nn.Module):
-    def __init__(self, pretrained=False, *args, **kwargs):
+    def __init__(self, pretrained=True, *args, **kwargs):
         super(ContextPath, self).__init__()
-        self.resnet = timm.create_model('resnet18', features_only=True, output_stride=32,
+        self.resnet = timm.create_model('swsl_resnet18', features_only=True, output_stride=32,
                                         out_indices=(2, 3, 4), pretrained=pretrained)
         self.arm16 = AttentionEnhancementModule(256, 128)
         self.arm32 = AttentionEnhancementModule(512, 128)
@@ -194,7 +194,7 @@ class ContextPath(nn.Module):
         feat16_up = self.up16(feat16_sum)
         feat16_up = self.conv_head16(feat16_up)
 
-        return feat16_up, self.up16(feat16), self.up32(feat32)  # x8, x16
+        return feat16_up, feat32_up  # x8, x16
 
     def init_weight(self):
         for ly in self.children():
@@ -287,25 +287,25 @@ class ABCNet(nn.Module):
     def __init__(self, band=3, n_classes=8, pretrained=True):
         super(ABCNet, self).__init__()
         self.name = 'ABCNet'
-        self.cp = ContextPath()
+        self.cp = ContextPath(pretrained)
         self.sp = SpatialPath()
         self.fam = FeatureAggregationModule(256, 256)
         self.conv_out = Output(256, 256, n_classes, up_factor=8)
         if self.training:
-            self.conv_out16 = Output(256, 64, n_classes, up_factor=8)
-            self.conv_out32 = Output(512, 64, n_classes, up_factor=16)
+            self.conv_out16 = Output(128, 64, n_classes, up_factor=8)
+            self.conv_out32 = Output(128, 64, n_classes, up_factor=16)
         self.init_weight()
 
     def forward(self, x):
         H, W = x.size()[2:]
-        feat_cp8, feat_cp16, feat_cp32 = self.cp(x)
+        feat_cp8, feat_cp16 = self.cp(x)
         feat_sp = self.sp(x)
         feat_fuse = self.fam(feat_sp, feat_cp8)
 
         feat_out = self.conv_out(feat_fuse)
         if self.training:
-            feat_out16 = self.conv_out16(feat_cp16)
-            feat_out32 = self.conv_out32(feat_cp32)
+            feat_out16 = self.conv_out16(feat_cp8)
+            feat_out32 = self.conv_out32(feat_cp16)
             return feat_out, feat_out16, feat_out32
         # feat_out = feat_out.argmax(dim=1)
         return feat_out
@@ -335,7 +335,7 @@ if __name__ == "__main__":
     net.train()
     in_ten = torch.randn(4, 3, 512, 512).cuda()
     out = net(in_ten)
-    print(out.shape)
+    print(out[0].shape)
     # print(out16.shape)
     # print(out32.shape)
 

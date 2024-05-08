@@ -2,8 +2,8 @@ from torch.utils.data import DataLoader
 from geoseg.losses import *
 from geoseg.datasets.potsdam_dataset import *
 from geoseg.models.UNetFormer import UNetFormer
-from catalyst.contrib.nn import Lookahead
-from catalyst import utils
+from tools.utils import Lookahead
+from tools.utils import process_model_params
 
 # training hparam
 max_epoch = 45
@@ -17,8 +17,6 @@ backbone_weight_decay = 0.01
 num_classes = len(CLASSES)
 classes = CLASSES
 
-test_time_aug = 'd4'
-output_mask_dir, output_mask_rgb_dir = None, None
 weights_name = "unetformer-r18-768crop-ms-e45"
 weights_path = "model_weights/potsdam/{}".format(weights_name)
 test_weights_name = "unetformer-r18-768crop-ms-e45"
@@ -64,7 +62,7 @@ val_loader = DataLoader(dataset=val_dataset,
 
 # define the optimizer
 layerwise_params = {"backbone.*": dict(lr=backbone_lr, weight_decay=backbone_weight_decay)}
-net_params = utils.process_model_params(net, layerwise_params=layerwise_params)
+net_params = process_model_params(net, layerwise_params=layerwise_params)
 base_optimizer = torch.optim.AdamW(net_params, lr=lr, weight_decay=weight_decay)
 optimizer = Lookahead(base_optimizer)
 lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=15, T_mult=2)

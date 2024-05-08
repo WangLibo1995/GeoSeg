@@ -1,5 +1,4 @@
 timm
-catalyst==20.09
 lightning
 albumentations
 ttach
@@ -10,3 +9,5 @@ scipy
 matplotlib
 einops
 addict
+ftfy
+regex

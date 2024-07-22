@@ -1,5 +1,6 @@
-timm
-lightning
+timm==0.9.16
+lightning==2.0.0
+pytorch-lightning==2.3.0
 albumentations
 ttach
 numpy

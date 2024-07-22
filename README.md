@@ -8,6 +8,7 @@
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/efficient-hybrid-transformer-learning-global/semantic-segmentation-on-uavid)](https://paperswithcode.com/sota/semantic-segmentation-on-uavid?p=efficient-hybrid-transformer-learning-global)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/efficient-hybrid-transformer-learning-global/semantic-segmentation-on-loveda)](https://paperswithcode.com/sota/semantic-segmentation-on-loveda?p=efficient-hybrid-transformer-learning-global)
 
+- The code of [PyramidMamba](./geoseg/models/PyramidMamba.py) is released.
 - I have updated this repo to pytorch 2.0 and pytorch-lightning 2.0, support multi-gpu training, etc. 
 - Pretrained Weights of backbones can be access from [Google Drive](https://drive.google.com/drive/folders/1ELpFKONJZbXmwB5WCXG7w42eHtrXzyPn?usp=sharing)
 - [UNetFormer](https://www.sciencedirect.com/science/article/pii/S0924271622001654) (accepted by ISPRS, [PDF](https://www.researchgate.net/profile/Libo-Wang-17/publication/361736439_UNetFormer_A_UNet-like_transformer_for_efficient_semantic_segmentation_of_remote_sensing_urban_scene_imagery/links/62c2a1ed1cbf3a1d12ac1c87/UNetFormer-A-UNet-like-transformer-for-efficient-semantic-segmentation-of-remote-sensing-urban-scene-imagery.pdf)) and **UAVid dataset** are supported.
@@ -37,12 +38,17 @@ which mainly focuses on developing advanced Vision Transformers for remote sensi
   - [ISPRS Vaihingen and Potsdam](https://www.isprs.org/education/benchmarks/UrbanSemLab/default.aspx) 
   - [UAVid](https://uavid.nl/)
   - [LoveDA](https://codalab.lisn.upsaclay.fr/competitions/421)
+  - [OpenEarthMap](https://open-earth-map.org/)
   - More datasets will be supported in the future.
   
 - Multi-scale Training and Testing
 - Inference on Huge Remote Sensing Images
 
 ## Supported Networks
+
+- Mamba
+
+  - [PyramidMamba](https://arxiv.org/abs/2406.10828)
 
 - Vision Transformer
 
@@ -109,6 +115,12 @@ conda create -n airs python=3.8
 conda activate airs
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 pip install -r GeoSeg/requirements.txt
+```
+
+Install Mamba
+```
+pip install causal-conv1d>=1.4.0
+pip install mamba-ssm
 ```
 
 ## Pretrained Weights of Backbones

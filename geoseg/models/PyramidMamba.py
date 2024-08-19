@@ -72,7 +72,7 @@ class SeparableConv(nn.Sequential):
 class MambaLayer(nn.Module):
     def __init__(self, in_chs=512, dim=128, d_state=16, d_conv=4, expand=2, last_feat_size=16):
         super().__init__()
-        pool_scales = self.generate_arithmetic_sequence(1, last_feat_size, last_feat_size // 8)
+        pool_scales = self.generate_arithmetic_sequence(1, last_feat_size, last_feat_size // 4)
         self.pool_len = len(pool_scales)
         self.pool_layers = nn.ModuleList()
         self.pool_layers.append(nn.Sequential(
